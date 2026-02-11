@@ -2,7 +2,6 @@ package com.example.playlistmaker
 
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -31,27 +30,32 @@ class SettingsActivity: AppCompatActivity() {
 
         val buttonShareTheApp = findViewById<MaterialTextView>(R.id.share_the_app)
         buttonShareTheApp.setOnClickListener {
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.type = "message/*"
-            intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_the_app_uri))
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "message/*"
+                putExtra(Intent.EXTRA_TEXT, getString(R.string.share_the_app_uri))
+            }
             val chosenIntent = Intent.createChooser(intent, getString(R.string.share_the_app))
             startActivity(chosenIntent)
         }
 
         val buttonWriteToSupport = findViewById<MaterialTextView>(R.id.write_to_support)
+        val addresses =arrayOf (getString(R.string.write_to_support_email))
         buttonWriteToSupport.setOnClickListener {
-            val intent = Intent(Intent.ACTION_SENDTO)
-            intent.data = getString(R.string.write_to_support_uri).toUri()
-            intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.write_to_support_subject))
-            intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.write_to_support_text))
+            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                data = "mailto:".toUri()
+                putExtra(Intent.EXTRA_EMAIL, addresses)
+                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.write_to_support_subject))
+                putExtra(Intent.EXTRA_TEXT, getString(R.string.write_to_support_text))
+            }
             startActivity(intent)
         }
 
         val buttonUserAgreement = findViewById<MaterialTextView>(R.id.user_agreement)
         buttonUserAgreement.setOnClickListener {
             val address = getString(R.string.user_agreement_uri).toUri()
-            val intent = Intent(Intent.ACTION_VIEW, address)
-            intent.addCategory(Intent.CATEGORY_BROWSABLE)
+            val intent = Intent(Intent.ACTION_VIEW, address).apply {
+                addCategory(Intent.CATEGORY_BROWSABLE)
+            }
             startActivity(intent)
         }
     }

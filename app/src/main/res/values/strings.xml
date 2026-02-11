@@ -14,7 +14,7 @@
 
     <string name="user_agreement_uri">https://yandex.ru/legal/practicum_offer/ru/</string>
     <string name="share_the_app_uri">https://practicum.yandex.ru/profile/android-developer-plus/</string>
-    <string name="write_to_support_uri">mailto: Florid95@yandex.ru</string>
+    <string name="write_to_support_email">Florid95@yandex.ru</string>
     <string name="write_to_support_subject">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
     <string name="write_to_support_text">Спасибо разработчикам и разработчицам за крутое приложение!</string>
 

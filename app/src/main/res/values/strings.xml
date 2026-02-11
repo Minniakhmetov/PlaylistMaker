@@ -5,11 +5,17 @@
     <string name="medical_library">Медиатека</string>
     <string name="settings">Настройки</string>
 
+    <string name="clear">Очистить</string>
 
     <string name="dark_theme">Темная тема</string>
     <string name="share_the_app">Поделиться приложением</string>
     <string name="write_to_support">Написать в поддержку</string>
     <string name="user_agreement">Пользовательское соглашение</string>
 
+    <string name="user_agreement_uri">https://yandex.ru/legal/practicum_offer/ru/</string>
+    <string name="share_the_app_uri">https://practicum.yandex.ru/profile/android-developer-plus/</string>
+    <string name="write_to_support_uri">mailto: Florid95@yandex.ru</string>
+    <string name="write_to_support_subject">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="write_to_support_text">Спасибо разработчикам и разработчицам за крутое приложение!</string>
 
 </resources>

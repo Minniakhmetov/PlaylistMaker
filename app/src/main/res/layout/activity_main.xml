@@ -4,79 +4,36 @@
     android:id="@+id/main_activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/yp_blue"
-    android:orientation="vertical">
+    android:background="?attr/colorPrimaryVariant"
+    android:orientation="vertical"
+    android:theme="@style/Theme.PlaylistMaker">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:title="@string/app_name"
-        app:titleTextColor="@color/yp_white">
-    </com.google.android.material.appbar.MaterialToolbar>
+        app:titleTextColor="@color/yp_white"
+        app:titleTextAppearance="@style/MainTitleStyle"/>
 
     <Button
         android:id="@+id/search"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:backgroundTint="@color/yp_white"
-        android:layout_marginHorizontal="@dimen/main_padding"
-        android:layout_marginTop="@dimen/main_padding"
-        android:insetTop="@dimen/button_padding"
-        android:insetBottom="@dimen/button_padding"
         android:text="@string/search"
-        android:textAllCaps="false"
-        android:textColor="@color/yp_black"
-        android:textSize="@dimen/text_size"
-        app:cornerRadius="@dimen/button_corner_radius"
         app:icon="@drawable/search"
-        app:iconGravity="textStart"
-        app:iconTint="@color/yp_black"
-        app:iconPadding="8dp"
-        app:iconSize="@dimen/button_icon_size"
-        android:letterSpacing="0" />
+        style="@style/MainButtonStyle"
+        android:layout_marginTop="@dimen/main_padding"
+        />
 
     <Button
         android:id="@+id/medical_library"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:backgroundTint="@color/yp_white"
-        android:layout_marginHorizontal="@dimen/main_padding"
         android:text="@string/medical_library"
-        android:textColor="@color/yp_black"
-        android:textSize="@dimen/text_size"
-        android:textAllCaps="false"
-        app:cornerRadius="@dimen/button_corner_radius"
-        android:insetTop="@dimen/button_padding"
-        android:insetBottom="@dimen/button_padding"
         app:icon="@drawable/medical_library"
-        app:iconGravity="textStart"
-        app:iconTint="@color/yp_black"
-        app:iconPadding="8dp"
-        app:iconSize="@dimen/button_icon_size"
-        android:letterSpacing="0" />
+        style="@style/MainButtonStyle"
+        />
 
     <Button
         android:id="@+id/settings"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginHorizontal="@dimen/main_padding"
-        android:layout_marginBottom="20dp"
-        android:layout_weight="1"
-        android:backgroundTint="@color/yp_white"
-        android:insetTop="@dimen/button_padding"
-        android:insetBottom="@dimen/button_padding"
-        android:letterSpacing="0"
         android:text="@string/settings"
-        android:textAllCaps="false"
-        android:textColor="@color/yp_black"
-        android:textSize="@dimen/text_size"
-        app:cornerRadius="@dimen/button_corner_radius"
         app:icon="@drawable/settings"
-        app:iconGravity="textStart"
-        app:iconPadding="8dp"
-        app:iconSize="@dimen/button_icon_size"
-        app:iconTint="@color/yp_black" />
-
+        style="@style/MainButtonStyle"
+        android:layout_marginBottom="20dp"/>
 </LinearLayout>

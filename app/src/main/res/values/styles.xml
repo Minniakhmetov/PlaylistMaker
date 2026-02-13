@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MainButtonStyle" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:backgroundTint">@color/yp_white</item>
+        <item name="android:layout_marginHorizontal">@dimen/main_padding</item>
+        <item name="android:insetTop">@dimen/button_padding</item>
+        <item name="android:insetBottom">@dimen/button_padding</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">@dimen/text_size</item>
+        <item name="android:textColor">@color/yp_black</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="cornerRadius">@dimen/button_corner_radius</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">8dp</item>
+        <item name="iconTint">@color/yp_black</item>
+        <item name="iconSize">@dimen/button_icon_size</item>
+        <item name="fontFamily">@font/ys_display_medium</item>
+        <item name="android:textFontWeight">500</item>
+    </style>
+
+    <style name="SettingButtonStyle" parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingHorizontal">@dimen/main_padding</item>
+        <item name="android:paddingVertical">@dimen/settings_vertical_padding</item>
+        <item name="android:textSize">@dimen/settings_text_size</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="drawableTint">@color/yp_gray</item>
+    </style>
+
+    <style name="MainTitleStyle">
+        <item name="fontFamily">@font/ys_display_medium</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textSize">20sp</item>
+        <item name="titleTextColor">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="MySwitch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="fontFamily">@font/ys_display_medium</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textSize">20sp</item>
+        <item name="titleTextColor">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="SearchBackground">
+        <item name="android:background">@drawable/bg_item_search</item>
+    </style>
+
+    <style name="SearchEditTextColors">
+        <item name="android:textColorHint">@color/yp_text_gray</item>
+        <item name="android:textCursorDrawable">@drawable/cursor</item>
+        <item name="android:textColor">@color/yp_black</item>
+        <item name="android:drawableStart">@drawable/search</item>
+        <item name="tint">@color/yp_text_gray</item>
+
+    </style>
+</resources>

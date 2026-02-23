@@ -18,7 +18,7 @@
     <Button
         android:id="@+id/search"
         android:text="@string/search"
-        app:icon="@drawable/search"
+        app:icon="@drawable/ic_search_16"
         style="@style/MainButtonStyle"
         android:layout_marginTop="@dimen/main_padding"
         />
@@ -26,14 +26,14 @@
     <Button
         android:id="@+id/medical_library"
         android:text="@string/medical_library"
-        app:icon="@drawable/medical_library"
+        app:icon="@drawable/ic_medical_library_20"
         style="@style/MainButtonStyle"
         />
 
     <Button
         android:id="@+id/settings"
         android:text="@string/settings"
-        app:icon="@drawable/settings"
+        app:icon="@drawable/ic_settings_24"
         style="@style/MainButtonStyle"
         android:layout_marginBottom="20dp"/>
 </LinearLayout>

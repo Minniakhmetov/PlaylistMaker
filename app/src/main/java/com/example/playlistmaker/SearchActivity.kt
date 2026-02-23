@@ -23,8 +23,6 @@ class SearchActivity : AppCompatActivity() {
         outState.putString(TEXT_SEARCH_KEY, textSearch)
     }
 
-    //private val searchTracksAdapter = SearchTracksAdapter(getTracks())
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

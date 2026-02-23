@@ -26,7 +26,7 @@ class SearchTrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         Glide
             .with(itemView)
             .load(track.artworkUrl100)
-            .placeholder(R.drawable.track_placeholder)
+            .placeholder(R.drawable.ic_track_placeholder_45)
             .transform(RoundedCorners(TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 2f,

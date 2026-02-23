@@ -13,7 +13,7 @@
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:contentDescription="@string/search_track_placeholder"
-        tools:src="@drawable/track_placeholder"
+        tools:src="@drawable/ic_track_placeholder_45"
         android:scaleType="centerCrop"
         android:layout_gravity="center_vertical"
         />
@@ -46,7 +46,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/search_track_separator"
-                android:src="@drawable/track_separator"
+                android:src="@drawable/ic_track_separator_3"
                 android:layout_marginHorizontal="5dp"
                 style="@style/SearchItemTrack"
                 />
@@ -62,7 +62,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:contentDescription="@string/search_track_arrow_forward"
-        android:src="@drawable/arrow_track_forward"
+        android:src="@drawable/ic_arrow_track_forward_24"
         style="@style/SearchItemTrack"
         android:layout_marginEnd="12dp"
         android:layout_marginStart="8dp"

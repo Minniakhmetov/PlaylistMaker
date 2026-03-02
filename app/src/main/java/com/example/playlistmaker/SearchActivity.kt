@@ -1,6 +1,7 @@
 package com.example.playlistmaker
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -24,9 +25,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
-    private val tracksBaseUrl = "https://itunes.apple.com"
     private val tracksRetrofit = Retrofit.Builder()
-        .baseUrl(tracksBaseUrl)
+        .baseUrl(TRACKS_BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
     private val tracksService = tracksRetrofit.create(SearchTracksApi::class.java)
@@ -77,7 +77,9 @@ class SearchActivity : AppCompatActivity() {
         buttonClearSearch.setOnClickListener {
             inputTextSearch.setText("")
             inputMethodManager?.hideSoftInputFromWindow(this.currentFocus?.windowToken, 0)
-
+            tracks.clear()
+            tracksAdapter.notifyDataSetChanged()
+            showMessage("","")
         }
         inputTextSearch.doOnTextChanged { text, start, before, count ->
             buttonClearSearch.visibility = buttonClearSearchVisibility(text)
@@ -113,11 +115,16 @@ class SearchActivity : AppCompatActivity() {
                     call: Call<SearchTracksResponse?>,
                     response: Response<SearchTracksResponse?>,
                 ) {
-                    if (response.body()?.results?.isNotEmpty() == true){
-                        tracks.clear()
-                        tracks.addAll(response.body()?.results!!)
-                        tracksAdapter.notifyDataSetChanged()
-                        showMessage("", "")
+                    if (response.isSuccessful){
+                        val results = response.body()?.results
+                        if (results?.isNotEmpty() == true){
+                            tracks.clear()
+                            tracks.addAll(results)
+                            tracksAdapter.notifyDataSetChanged()
+                            showMessage("", "")
+                        }else{
+                            showMessage(getString(R.string.nothing_was_found), "")
+                        }
                     }else{
                         showMessage(getString(R.string.nothing_was_found), "")
                     }
@@ -154,9 +161,6 @@ class SearchActivity : AppCompatActivity() {
 
     private fun buttonClearSearchVisibility(s: CharSequence?): Int {
         return if (s.isNullOrEmpty()) {
-            tracks.clear()
-            tracksAdapter.notifyDataSetChanged()
-            showMessage("","")
             View.GONE
         } else {
             View.VISIBLE
@@ -165,5 +169,6 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         const val TEXT_SEARCH_KEY = "TEXT_SEARCH"
         const val TEXT_SEARCH_VALUE = ""
+        const val TRACKS_BASE_URL = "https://itunes.apple.com"
     }
 }

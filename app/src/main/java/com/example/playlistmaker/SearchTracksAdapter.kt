@@ -3,22 +3,18 @@ package com.example.playlistmaker
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
-class SearchTracksAdapter(
-    private val tracks: ArrayList<Track>
-): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class SearchTracksAdapter: RecyclerView.Adapter<SearchTrackViewHolder>() {
+    var tracks = mutableListOf<Track>()
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): RecyclerView.ViewHolder {
-        return SearchTrackViewHolder(parent)
-    }
+    ): SearchTrackViewHolder = SearchTrackViewHolder(parent)
 
     override fun onBindViewHolder(
-        holder: RecyclerView.ViewHolder,
+        holder: SearchTrackViewHolder,
         position: Int
     ) {
-        (holder as SearchTrackViewHolder).bind(tracks[position])
+        holder.bind(tracks[position])
     }
-
     override fun getItemCount() = tracks.size
 }

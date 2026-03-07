@@ -30,6 +30,8 @@
             android:id="@+id/input_text_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
             android:hint="@string/search"
             android:inputType="text"
             android:fontFamily="@font/ys_display_regular"
@@ -55,10 +57,41 @@
             style="@style/SearchEditTextColors"
             />
     </FrameLayout>
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/tracksList"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="16dp"
-        />
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/tracksList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="16dp"
+            android:visibility="visible"
+            />
+        <LinearLayout
+            android:id="@+id/message_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="110dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone"
+            >
+            <ImageView
+                android:id="@+id/message_image"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                />
+            <TextView
+                android:id="@+id/message_text"
+                style="@style/SearchPlaceholderText"
+                />
+            <Button
+                android:id="@+id/message_button"
+                android:text="@string/update"
+                style="@style/ButtonStyle"
+                />
+        </LinearLayout>
+    </FrameLayout>
+
 </LinearLayout>

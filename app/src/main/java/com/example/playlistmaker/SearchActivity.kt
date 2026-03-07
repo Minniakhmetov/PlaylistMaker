@@ -1,7 +1,6 @@
 package com.example.playlistmaker
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -14,6 +13,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -31,7 +31,8 @@ class SearchActivity : AppCompatActivity() {
         .build()
     private val tracksService = tracksRetrofit.create(SearchTracksApi::class.java)
     private val tracks = mutableListOf<Track>()
-    private val tracksAdapter = SearchTracksAdapter()
+    private val tracksAdapter = SearchTracksAdapter{onItemClick(tracks[it])}
+    private val historyTracksAdapter = SearchTracksAdapter{}
 
     private var textSearch: String = TEXT_SEARCH_VALUE
     private var lastTextSearch: String = ""
@@ -41,6 +42,9 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var messageText: TextView
     private lateinit var messageButton: Button
     private lateinit var inputTextSearch: EditText
+    private lateinit var llSearchHistory: LinearLayout
+    private lateinit var buttonClearHistory: Button
+    private lateinit var searchHistory: SearchHistory
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -60,6 +64,8 @@ class SearchActivity : AppCompatActivity() {
         messageImage = findViewById(R.id.message_image)
         messageText = findViewById(R.id.message_text)
         messageButton = findViewById(R.id.message_button)
+        llSearchHistory = findViewById(R.id.ll_search_history)
+        buttonClearHistory = findViewById(R.id.btn_clear_history)
 
         val buttonBack = findViewById<MaterialToolbar>(R.id.toolbar_search)
         buttonBack.setNavigationOnClickListener {
@@ -79,11 +85,28 @@ class SearchActivity : AppCompatActivity() {
             inputMethodManager?.hideSoftInputFromWindow(this.currentFocus?.windowToken, 0)
             tracks.clear()
             tracksAdapter.notifyDataSetChanged()
-            showMessage("","")
+            if (messagePlaceholder.isVisible){
+                showMessage("","")
+            }
+            llSearchHistory.visibility = View.VISIBLE
         }
         inputTextSearch.doOnTextChanged { text, start, before, count ->
             buttonClearSearch.visibility = buttonClearSearchVisibility(text)
             textSearch = text.toString()
+
+            llSearchHistory.visibility = if (
+                inputTextSearch.hasFocus()
+                && text?.isEmpty() == true
+                && searchHistory.historyTracks.isNotEmpty()
+                && !(messagePlaceholder.isVisible)
+            ) View.VISIBLE else View.GONE
+
+            if (text?.isEmpty() == true){
+                tracks.clear()
+                tracksAdapter.notifyDataSetChanged()
+                historyTracksAdapter.tracks = searchHistory.historyTracks
+                historyTracksAdapter.notifyDataSetChanged()
+            }
         }
 
         val rvSearchTracks = findViewById<RecyclerView>(R.id.tracksList)
@@ -101,9 +124,32 @@ class SearchActivity : AppCompatActivity() {
             }
             false
         }
+        inputTextSearch.setOnFocusChangeListener { view, hasFocus ->
+            llSearchHistory.visibility = if (
+                hasFocus
+                && inputTextSearch.text.isEmpty()
+                && searchHistory.historyTracks.isNotEmpty()
+                && !(messagePlaceholder.isVisible)
+                ) View.VISIBLE else View.GONE
+        }
         messageButton.setOnClickListener {
             searchTracks(lastTextSearch)
             inputTextSearch.setText(lastTextSearch)
+        }
+
+        val sharedPrefs = getSharedPreferences(SEARCH_PREFERENCES, MODE_PRIVATE)
+        searchHistory = SearchHistory(sharedPrefs)
+
+        val rvHistoryTracks = findViewById<RecyclerView>(R.id.history_tracks)
+        rvHistoryTracks.layoutManager = LinearLayoutManager(this)
+        rvHistoryTracks.adapter = historyTracksAdapter
+        historyTracksAdapter.tracks = searchHistory.historyTracks
+
+        buttonClearHistory.setOnClickListener {
+            searchHistory.clearHistory()
+            historyTracksAdapter.tracks = searchHistory.historyTracks
+            historyTracksAdapter.notifyDataSetChanged()
+            llSearchHistory.visibility = View.GONE
         }
     }
 
@@ -147,12 +193,12 @@ class SearchActivity : AppCompatActivity() {
             if (additionalMessage.isEmpty()){
                 messageButton.visibility = View.GONE
                 messageImage.setImageResource(R.drawable.ic_nothing_was_found_120)
-
             }else{
                 messageButton.visibility = View.VISIBLE
                 inputTextSearch.setText("")
                 messageImage.setImageResource(R.drawable.ic_communication_problems_120)
             }
+            llSearchHistory.visibility = View.GONE
         }else{
             messagePlaceholder.visibility = View.GONE
             messageButton.visibility = View.GONE
@@ -166,9 +212,15 @@ class SearchActivity : AppCompatActivity() {
             View.VISIBLE
         }
     }
+
+    private fun onItemClick(track: Track){
+        searchHistory.saveTrack(track)
+    }
+
     companion object {
         const val TEXT_SEARCH_KEY = "TEXT_SEARCH"
         const val TEXT_SEARCH_VALUE = ""
         const val TRACKS_BASE_URL = "https://itunes.apple.com"
+        const val SEARCH_PREFERENCES = "search_preferences"
     }
 }

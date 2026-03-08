@@ -7,6 +7,8 @@
 
     <string name="clear">Очистить</string>
     <string name="update">Обновить</string>
+    <string name="you_searched">Вы искали</string>
+    <string name="clear_history">Очистить историю</string>
 
     <string name="dark_theme">Темная тема</string>
     <string name="share_the_app">Поделиться приложением</string>

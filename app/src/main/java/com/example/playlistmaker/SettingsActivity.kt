@@ -11,6 +11,7 @@ import androidx.core.view.updatePadding
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.textview.MaterialTextView
 import androidx.core.net.toUri
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,6 +58,12 @@ class SettingsActivity: AppCompatActivity() {
                 addCategory(Intent.CATEGORY_BROWSABLE)
             }
             startActivity(intent)
+        }
+
+        val themeSwitcher = findViewById<SwitchMaterial>(R.id.theme_switcher_dark_theme)
+        themeSwitcher.isChecked = (applicationContext as App).getThemeSetting()
+        themeSwitcher.setOnCheckedChangeListener { themeSwitcher, checked ->
+            (applicationContext as App).switchTheme(checked)
         }
     }
 }

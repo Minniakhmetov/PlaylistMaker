@@ -3,7 +3,7 @@ package com.example.playlistmaker
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
-class SearchTracksAdapter: RecyclerView.Adapter<SearchTrackViewHolder>() {
+class SearchTracksAdapter(private val onItemClick: (Int) -> Unit): RecyclerView.Adapter<SearchTrackViewHolder>() {
     var tracks = mutableListOf<Track>()
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -15,6 +15,9 @@ class SearchTracksAdapter: RecyclerView.Adapter<SearchTrackViewHolder>() {
         position: Int
     ) {
         holder.bind(tracks[position])
+        holder.itemView.setOnClickListener {
+            onItemClick(position)
+        }
     }
     override fun getItemCount() = tracks.size
 }

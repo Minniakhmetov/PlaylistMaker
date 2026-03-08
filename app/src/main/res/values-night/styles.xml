@@ -35,6 +35,7 @@
         <item name="android:paddingHorizontal">14dp</item>
         <item name="android:paddingVertical">10dp</item>
         <item name="android:layout_marginTop">24dp</item>
+        <item name="android:layout_gravity">center</item>
     </style>
 
     <style name="SettingButtonStyle" parent="Widget.MaterialComponents.TextView">

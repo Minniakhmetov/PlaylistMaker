@@ -88,18 +88,18 @@ class SearchActivity : AppCompatActivity() {
             if (messagePlaceholder.isVisible){
                 showMessage("","")
             }
-            llSearchHistory.visibility = View.VISIBLE
+            if (searchHistory.historyTracks.isNotEmpty()){
+                llSearchHistory.isVisible = true
+            }
         }
         inputTextSearch.doOnTextChanged { text, start, before, count ->
-            buttonClearSearch.visibility = buttonClearSearchVisibility(text)
+            buttonClearSearch.isVisible = buttonClearSearchVisibility(text)
             textSearch = text.toString()
 
-            llSearchHistory.visibility = if (
-                inputTextSearch.hasFocus()
-                && text?.isEmpty() == true
-                && searchHistory.historyTracks.isNotEmpty()
-                && !(messagePlaceholder.isVisible)
-            ) View.VISIBLE else View.GONE
+            llSearchHistory.isVisible = (inputTextSearch.hasFocus()
+                    && text?.isEmpty() == true
+                    && searchHistory.historyTracks.isNotEmpty()
+                    && !(messagePlaceholder.isVisible))
 
             if (text?.isEmpty() == true){
                 tracks.clear()
@@ -125,12 +125,10 @@ class SearchActivity : AppCompatActivity() {
             false
         }
         inputTextSearch.setOnFocusChangeListener { view, hasFocus ->
-            llSearchHistory.visibility = if (
-                hasFocus
-                && inputTextSearch.text.isEmpty()
-                && searchHistory.historyTracks.isNotEmpty()
-                && !(messagePlaceholder.isVisible)
-                ) View.VISIBLE else View.GONE
+            llSearchHistory.isVisible = (hasFocus
+                    && inputTextSearch.text.isEmpty()
+                    && searchHistory.historyTracks.isNotEmpty()
+                    && !(messagePlaceholder.isVisible))
         }
         messageButton.setOnClickListener {
             searchTracks(lastTextSearch)
@@ -149,7 +147,7 @@ class SearchActivity : AppCompatActivity() {
             searchHistory.clearHistory()
             historyTracksAdapter.tracks = searchHistory.historyTracks
             historyTracksAdapter.notifyDataSetChanged()
-            llSearchHistory.visibility = View.GONE
+            llSearchHistory.isVisible = false
         }
     }
 
@@ -186,31 +184,27 @@ class SearchActivity : AppCompatActivity() {
 
     private fun showMessage(text: String, additionalMessage: String){
         if (text.isNotEmpty()) {
-            messagePlaceholder.visibility = View.VISIBLE
+            messagePlaceholder.isVisible = true
             tracks.clear()
             tracksAdapter.notifyDataSetChanged()
             messageText.text = text
             if (additionalMessage.isEmpty()){
-                messageButton.visibility = View.GONE
+                messageButton.isVisible = false
                 messageImage.setImageResource(R.drawable.ic_nothing_was_found_120)
             }else{
-                messageButton.visibility = View.VISIBLE
+                messageButton.isVisible = true
                 inputTextSearch.setText("")
                 messageImage.setImageResource(R.drawable.ic_communication_problems_120)
             }
-            llSearchHistory.visibility = View.GONE
+            llSearchHistory.isVisible = false
         }else{
-            messagePlaceholder.visibility = View.GONE
-            messageButton.visibility = View.GONE
+            messagePlaceholder.isVisible = false
+            messageButton.isVisible = false
         }
     }
 
-    private fun buttonClearSearchVisibility(s: CharSequence?): Int {
-        return if (s.isNullOrEmpty()) {
-            View.GONE
-        } else {
-            View.VISIBLE
-        }
+    private fun buttonClearSearchVisibility(s: CharSequence?): Boolean {
+        return !s.isNullOrEmpty()
     }
 
     private fun onItemClick(track: Track){

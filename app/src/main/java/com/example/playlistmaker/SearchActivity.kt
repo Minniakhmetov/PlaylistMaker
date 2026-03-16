@@ -1,5 +1,7 @@
 package com.example.playlistmaker
 
+import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -11,13 +13,16 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.AudioPlayerActivity.Companion.ACTIVITY_AUDIO_PLAYER_KEY
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -32,7 +37,7 @@ class SearchActivity : AppCompatActivity() {
     private val tracksService = tracksRetrofit.create(SearchTracksApi::class.java)
     private val tracks = mutableListOf<Track>()
     private val tracksAdapter = SearchTracksAdapter{onItemClick(tracks[it])}
-    private val historyTracksAdapter = SearchTracksAdapter{}
+    private val historyTracksAdapter = SearchTracksAdapter{onItemClick(searchHistory.historyTracks[it])}
 
     private var textSearch: String = TEXT_SEARCH_VALUE
     private var lastTextSearch: String = ""
@@ -209,6 +214,14 @@ class SearchActivity : AppCompatActivity() {
 
     private fun onItemClick(track: Track){
         searchHistory.saveTrack(track)
+        historyTracksAdapter.tracks = searchHistory.historyTracks
+        historyTracksAdapter.notifyDataSetChanged()
+        val gson = Gson()
+        val trackGson = gson.toJson(track)
+        val intentAudioPlayer = Intent(this, AudioPlayerActivity::class.java)
+        intentAudioPlayer.putExtra("track", trackGson)
+        startActivity(intentAudioPlayer)
+
     }
 
     companion object {

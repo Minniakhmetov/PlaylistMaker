@@ -7,15 +7,16 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.IntentCompat
 import androidx.core.content.edit
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.playlistmaker.App.Companion.SETTING_PREFERENCES
+import com.example.playlistmaker.SearchActivity.Companion.TRACK_KEY
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -36,14 +37,6 @@ class AudioPlayerActivity : AppCompatActivity() {
     private lateinit var trackCountryText: TextView
     private lateinit var trackCountry: TextView
 
-    private lateinit var track: Track
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        sharedPrefs.edit {
-            putBoolean(ACTIVITY_AUDIO_PLAYER_KEY, true)
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,27 +61,28 @@ class AudioPlayerActivity : AppCompatActivity() {
         trackCountryText = findViewById(R.id.tv_audio_player_text_country)
         trackCountry = findViewById(R.id.tv_audio_player_value_country)
 
-        sharedPrefs = getSharedPreferences(ACTIVITY_PREFERENCES, MODE_PRIVATE)
+        sharedPrefs = getSharedPreferences(SETTING_PREFERENCES, MODE_PRIVATE)
 
         val buttonBack = findViewById<MaterialToolbar>(R.id.toolbar_audio_player)
         buttonBack.setNavigationOnClickListener {
             finish()
         }
 
-        val gson = Gson()
-        val intentTrack = intent.getStringExtra("track") ?: ""
-        if (intentTrack.isNotEmpty()){
-            val type = object : TypeToken<Track>() {}.type
-            track = gson.fromJson(intentTrack, type)
+        val track = IntentCompat.getParcelableExtra(intent, TRACK_KEY, Track::class.java)
+        if (track != null) {
             Glide
                 .with(this)
                 .load(getCoverArtwork(track.artworkUrl100))
                 .placeholder(R.drawable.ic_track_placeholder_312)
-                .transform(RoundedCorners(TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    8f,
-                    this.resources.displayMetrics).toInt()
-                ))
+                .transform(
+                    RoundedCorners(
+                        TypedValue.applyDimension(
+                            TypedValue.COMPLEX_UNIT_DIP,
+                            8f,
+                            this.resources.displayMetrics
+                        ).toInt()
+                    )
+                )
                 .into(trackImage)
             trackName.text = track.trackName
             trackArtist.text = track.artistName
@@ -96,16 +90,16 @@ class AudioPlayerActivity : AppCompatActivity() {
             trackTime.text = trackTimeMillis
             trackDuration.text = trackTimeMillis
 
-            if (track.collectionName.isNotEmpty()){
+            if (track.collectionName.isNotEmpty()) {
                 trackAlbum.text = track.collectionName
                 trackAlbumText.isVisible = true
-            }else{
+            } else {
                 trackAlbumText.isVisible = false
             }
-            if (track.releaseDate.isNotEmpty()){
+            if (track.releaseDate.isNotEmpty()) {
                 trackReleaseDate.text = getCoverReleaseDate(track.releaseDate)
                 trackReleaseDateText.isVisible = true
-            }else{
+            } else {
                 trackReleaseDateText.isVisible = false
             }
             trackGenre.text = track.primaryGenreName
@@ -113,12 +107,23 @@ class AudioPlayerActivity : AppCompatActivity() {
         }
     }
 
-    fun getCoverArtwork(artworkUrl100: String) = artworkUrl100.replaceAfterLast('/',"512x512bb.jpg")
-    fun getCoverTimeMillis(time: Long): String? = SimpleDateFormat("mm:ss", Locale.getDefault()).format(time)
+    override fun onStop() {
+        super.onStop()
+        sharedPrefs.edit {
+            putString(SETTING_ACTIVITY_LAST, ACTIVITY_AUDIO_PLAYER_KEY)
+        }
+    }
+
+    fun getCoverArtwork(artworkUrl100: String) =
+        artworkUrl100.replaceAfterLast('/', "512x512bb.jpg")
+
+    fun getCoverTimeMillis(time: Long): String? =
+        SimpleDateFormat("mm:ss", Locale.getDefault()).format(time)
+
     fun getCoverReleaseDate(releaseDate: String): String? = releaseDate.take(4)
 
     companion object {
-        const val ACTIVITY_PREFERENCES = "activity_preferences"
-        const val ACTIVITY_AUDIO_PLAYER_KEY = "key_for_audio_player"
+        const val SETTING_ACTIVITY_LAST = "setting_activity_last"
+        const val ACTIVITY_AUDIO_PLAYER_KEY = "key_for_audio_player_activity"
     }
 }

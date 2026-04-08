@@ -24,12 +24,21 @@
     <string name="search_track_placeholder">Track placeholder</string>
     <string name="search_track_separator">Track Separator</string>
     <string name="search_track_arrow_forward">Arrow forward</string>
-    <string name="tools_search_track_name">Yesterday (Remastered 2009)</string>
-    <string name="tools_search_track_artist">The Beatles</string>
-    <string name="tools_search_track_time">2:55</string>
 
     <string name="communication_problems">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
     <string name="nothing_was_found">Ничего не нашлось</string>
 
+    <string name="track_time">Длительность</string>
+    <string name="track_collection_name">Альбом</string>
+    <string name="track_release_date">Год</string>
+    <string name="track_primary_genre_name">Жанр</string>
+    <string name="track_country">Страна</string>
 
+
+    <string name="tools_search_track_name">Yesterday (Remastered 2009)</string>
+    <string name="tools_search_track_artist">The Beatles</string>
+    <string name="tools_search_track_time">2:55</string>
+    <string name="tools_track_release_date">1965</string>
+    <string name="tools_track_primary_genre_name">Rock</string>
+    <string name="tools_track_country">Великобритания</string>
 </resources>

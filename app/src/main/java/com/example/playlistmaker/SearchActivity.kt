@@ -1,7 +1,7 @@
 package com.example.playlistmaker
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -11,12 +11,15 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.App.Companion.SETTING_PREFERENCES
+import com.example.playlistmaker.AudioPlayerActivity.Companion.SETTING_ACTIVITY_LAST
 import com.google.android.material.appbar.MaterialToolbar
 import retrofit2.Call
 import retrofit2.Callback
@@ -31,8 +34,9 @@ class SearchActivity : AppCompatActivity() {
         .build()
     private val tracksService = tracksRetrofit.create(SearchTracksApi::class.java)
     private val tracks = mutableListOf<Track>()
-    private val tracksAdapter = SearchTracksAdapter{onItemClick(tracks[it])}
-    private val historyTracksAdapter = SearchTracksAdapter{}
+    private val tracksAdapter = SearchTracksAdapter { onItemClick(tracks[it]) }
+    private val historyTracksAdapter =
+        SearchTracksAdapter { onItemClick(searchHistory.historyTracks[it]) }
 
     private var textSearch: String = TEXT_SEARCH_VALUE
     private var lastTextSearch: String = ""
@@ -74,7 +78,7 @@ class SearchActivity : AppCompatActivity() {
         inputTextSearch = findViewById(R.id.input_text_search)
         if (savedInstanceState != null) {
             textSearch = savedInstanceState.getString(TEXT_SEARCH_KEY, TEXT_SEARCH_VALUE)
-            if (textSearch.isNotEmpty()){
+            if (textSearch.isNotEmpty()) {
                 inputTextSearch.setText(textSearch)
             }
         }
@@ -85,10 +89,10 @@ class SearchActivity : AppCompatActivity() {
             inputMethodManager?.hideSoftInputFromWindow(this.currentFocus?.windowToken, 0)
             tracks.clear()
             tracksAdapter.notifyDataSetChanged()
-            if (messagePlaceholder.isVisible){
-                showMessage("","")
+            if (messagePlaceholder.isVisible) {
+                showMessage("", "")
             }
-            if (searchHistory.historyTracks.isNotEmpty()){
+            if (searchHistory.historyTracks.isNotEmpty()) {
                 llSearchHistory.isVisible = true
             }
         }
@@ -101,7 +105,7 @@ class SearchActivity : AppCompatActivity() {
                     && searchHistory.historyTracks.isNotEmpty()
                     && !(messagePlaceholder.isVisible))
 
-            if (text?.isEmpty() == true){
+            if (text?.isEmpty() == true) {
                 tracks.clear()
                 tracksAdapter.notifyDataSetChanged()
                 historyTracksAdapter.tracks = searchHistory.historyTracks
@@ -115,8 +119,8 @@ class SearchActivity : AppCompatActivity() {
         tracksAdapter.tracks = tracks
 
         inputTextSearch.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE){
-                if (textSearch.isNotEmpty()){
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                if (textSearch.isNotEmpty()) {
                     searchTracks(textSearch)
                     lastTextSearch = textSearch
                 }
@@ -151,28 +155,37 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun searchTracks(searchTrack: String){
+    override fun onStop() {
+        super.onStop()
+        val sharedPrefsSetting = getSharedPreferences(SETTING_PREFERENCES, MODE_PRIVATE)
+        sharedPrefsSetting.edit {
+            putString(SETTING_ACTIVITY_LAST, ACTIVITY_SEARCH_KEY)
+        }
+    }
+
+    private fun searchTracks(searchTrack: String) {
         tracksService
             .getTracks(searchTrack)
-            .enqueue(object : Callback<SearchTracksResponse>{
+            .enqueue(object : Callback<SearchTracksResponse> {
                 override fun onResponse(
                     call: Call<SearchTracksResponse?>,
                     response: Response<SearchTracksResponse?>,
                 ) {
-                    if (response.isSuccessful){
+                    if (response.isSuccessful) {
                         val results = response.body()?.results
-                        if (results?.isNotEmpty() == true){
+                        if (results?.isNotEmpty() == true) {
                             tracks.clear()
                             tracks.addAll(results)
                             tracksAdapter.notifyDataSetChanged()
                             showMessage("", "")
-                        }else{
+                        } else {
                             showMessage(getString(R.string.nothing_was_found), "")
                         }
-                    }else{
+                    } else {
                         showMessage(getString(R.string.nothing_was_found), "")
                     }
                 }
+
                 override fun onFailure(
                     call: Call<SearchTracksResponse?>,
                     t: Throwable,
@@ -182,22 +195,22 @@ class SearchActivity : AppCompatActivity() {
             })
     }
 
-    private fun showMessage(text: String, additionalMessage: String){
+    private fun showMessage(text: String, additionalMessage: String) {
         if (text.isNotEmpty()) {
             messagePlaceholder.isVisible = true
             tracks.clear()
             tracksAdapter.notifyDataSetChanged()
             messageText.text = text
-            if (additionalMessage.isEmpty()){
+            if (additionalMessage.isEmpty()) {
                 messageButton.isVisible = false
                 messageImage.setImageResource(R.drawable.ic_nothing_was_found_120)
-            }else{
+            } else {
                 messageButton.isVisible = true
                 inputTextSearch.setText("")
                 messageImage.setImageResource(R.drawable.ic_communication_problems_120)
             }
             llSearchHistory.isVisible = false
-        }else{
+        } else {
             messagePlaceholder.isVisible = false
             messageButton.isVisible = false
         }
@@ -207,8 +220,14 @@ class SearchActivity : AppCompatActivity() {
         return !s.isNullOrEmpty()
     }
 
-    private fun onItemClick(track: Track){
+    private fun onItemClick(track: Track) {
         searchHistory.saveTrack(track)
+        historyTracksAdapter.tracks = searchHistory.historyTracks
+        historyTracksAdapter.notifyDataSetChanged()
+        val intentAudioPlayer = Intent(this, AudioPlayerActivity::class.java)
+        intentAudioPlayer.putExtra(TRACK_KEY, track)
+        startActivity(intentAudioPlayer)
+
     }
 
     companion object {
@@ -216,5 +235,7 @@ class SearchActivity : AppCompatActivity() {
         const val TEXT_SEARCH_VALUE = ""
         const val TRACKS_BASE_URL = "https://itunes.apple.com"
         const val SEARCH_PREFERENCES = "search_preferences"
+        const val TRACK_KEY = "key_for_track"
+        const val ACTIVITY_SEARCH_KEY = "key_for_search_activity"
     }
 }

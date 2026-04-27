@@ -2,12 +2,15 @@ package com.example.playlistmaker
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -49,6 +52,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var llSearchHistory: LinearLayout
     private lateinit var buttonClearHistory: Button
     private lateinit var searchHistory: SearchHistory
+    private lateinit var pbTracksSearch: ProgressBar
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -70,6 +74,7 @@ class SearchActivity : AppCompatActivity() {
         messageButton = findViewById(R.id.message_button)
         llSearchHistory = findViewById(R.id.ll_search_history)
         buttonClearHistory = findViewById(R.id.btn_clear_history)
+        pbTracksSearch = findViewById(R.id.pb_tracks_search)
 
         val buttonBack = findViewById<MaterialToolbar>(R.id.toolbar_search)
         buttonBack.setNavigationOnClickListener {
@@ -110,6 +115,8 @@ class SearchActivity : AppCompatActivity() {
                 tracksAdapter.notifyDataSetChanged()
                 historyTracksAdapter.tracks = searchHistory.historyTracks
                 historyTracksAdapter.notifyDataSetChanged()
+            } else {
+                searchTracksDebounce()
             }
         }
 
@@ -164,6 +171,10 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun searchTracks(searchTrack: String) {
+        showMessage("", "")
+        tracks.clear()
+        tracksAdapter.notifyDataSetChanged()
+        pbTracksSearch.isVisible = true
         tracksService
             .getTracks(searchTrack)
             .enqueue(object : Callback<SearchTracksResponse> {
@@ -171,6 +182,7 @@ class SearchActivity : AppCompatActivity() {
                     call: Call<SearchTracksResponse?>,
                     response: Response<SearchTracksResponse?>,
                 ) {
+                    pbTracksSearch.isVisible = false
                     if (response.isSuccessful) {
                         val results = response.body()?.results
                         if (results?.isNotEmpty() == true) {
@@ -190,9 +202,17 @@ class SearchActivity : AppCompatActivity() {
                     call: Call<SearchTracksResponse?>,
                     t: Throwable,
                 ) {
+                    pbTracksSearch.isVisible = false
                     showMessage(getString(R.string.communication_problems), t.message.toString())
                 }
             })
+    }
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable { searchTracks(textSearch) }
+    private fun searchTracksDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
     private fun showMessage(text: String, additionalMessage: String) {
@@ -221,13 +241,24 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun onItemClick(track: Track) {
-        searchHistory.saveTrack(track)
-        historyTracksAdapter.tracks = searchHistory.historyTracks
-        historyTracksAdapter.notifyDataSetChanged()
-        val intentAudioPlayer = Intent(this, AudioPlayerActivity::class.java)
-        intentAudioPlayer.putExtra(TRACK_KEY, track)
-        startActivity(intentAudioPlayer)
+        if (clickTrackDebounce()) {
+            searchHistory.saveTrack(track)
+            historyTracksAdapter.tracks = searchHistory.historyTracks
+            historyTracksAdapter.notifyDataSetChanged()
+            val intentAudioPlayer = Intent(this, AudioPlayerActivity::class.java)
+            intentAudioPlayer.putExtra(TRACK_KEY, track)
+            startActivity(intentAudioPlayer)
+        }
+    }
 
+    private var isClickTrackAllowed = true
+    private fun clickTrackDebounce(): Boolean {
+        val current = isClickTrackAllowed
+        if (isClickTrackAllowed) {
+            isClickTrackAllowed = false
+            handler.postDelayed({ isClickTrackAllowed = true }, CLICK_TRACK_DEBOUNCE_DELAY)
+        }
+        return current
     }
 
     companion object {
@@ -237,5 +268,8 @@ class SearchActivity : AppCompatActivity() {
         const val SEARCH_PREFERENCES = "search_preferences"
         const val TRACK_KEY = "key_for_track"
         const val ACTIVITY_SEARCH_KEY = "key_for_search_activity"
+
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_TRACK_DEBOUNCE_DELAY = 1000L
     }
 }

@@ -1,7 +1,10 @@
 package com.example.playlistmaker
 
 import android.content.SharedPreferences
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.TypedValue
 import android.widget.ImageView
 import android.widget.TextView
@@ -36,6 +39,10 @@ class AudioPlayerActivity : AppCompatActivity() {
     private lateinit var trackGenre: TextView
     private lateinit var trackCountryText: TextView
     private lateinit var trackCountry: TextView
+    private lateinit var imgBtnTrackPlay: ImageView
+    private var playerState = PlayerState.DEFAULT
+    private var mediaPlayer = MediaPlayer()
+    private var mainThreadHandler: Handler? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +67,7 @@ class AudioPlayerActivity : AppCompatActivity() {
         trackGenre = findViewById(R.id.tv_audio_player_value_genre)
         trackCountryText = findViewById(R.id.tv_audio_player_text_country)
         trackCountry = findViewById(R.id.tv_audio_player_value_country)
+        imgBtnTrackPlay = findViewById(R.id.img_audio_player_track_play)
 
         sharedPrefs = getSharedPreferences(SETTING_PREFERENCES, MODE_PRIVATE)
 
@@ -87,7 +95,6 @@ class AudioPlayerActivity : AppCompatActivity() {
             trackName.text = track.trackName
             trackArtist.text = track.artistName
             val trackTimeMillis = getCoverTimeMillis(track.trackTimeMillis.toLong())
-            trackTime.text = trackTimeMillis
             trackDuration.text = trackTimeMillis
 
             if (track.collectionName.isNotEmpty()) {
@@ -105,6 +112,22 @@ class AudioPlayerActivity : AppCompatActivity() {
             trackGenre.text = track.primaryGenreName
             trackCountry.text = track.country
         }
+
+        if (track != null) {
+            preparePlayer(track)
+        }
+
+        imgBtnTrackPlay.setOnClickListener {
+            playbackControl()
+        }
+
+        mainThreadHandler = Handler(Looper.getMainLooper())
+        trackTime.text = getString(R.string.track_start_time)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pausePlayer()
     }
 
     override fun onStop() {
@@ -112,6 +135,12 @@ class AudioPlayerActivity : AppCompatActivity() {
         sharedPrefs.edit {
             putString(SETTING_ACTIVITY_LAST, ACTIVITY_AUDIO_PLAYER_KEY)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mainThreadHandler?.removeCallbacks(createTrackTimeTask())
+        mediaPlayer.release()
     }
 
     fun getCoverArtwork(artworkUrl100: String) =
@@ -122,8 +151,79 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     fun getCoverReleaseDate(releaseDate: String): String? = releaseDate.take(4)
 
+    private fun playbackControl() {
+        when (playerState) {
+            PlayerState.DEFAULT -> {
+
+            }
+
+            PlayerState.PLAYING -> {
+                pausePlayer()
+            }
+
+            PlayerState.PREPARED, PlayerState.PAUSED -> {
+                startPlayer()
+            }
+        }
+    }
+
+    private fun preparePlayer(track: Track) {
+        mediaPlayer.setDataSource(track.previewUrl)
+        mediaPlayer.prepareAsync()
+        mediaPlayer.setOnPreparedListener {
+            imgBtnTrackPlay.setImageResource(R.drawable.ic_track_play_100)
+            playerState = PlayerState.PREPARED
+        }
+        mediaPlayer.setOnCompletionListener {
+            imgBtnTrackPlay.setImageResource(R.drawable.ic_track_play_100)
+            playerState = PlayerState.PREPARED
+        }
+    }
+
+    private fun startPlayer() {
+        mediaPlayer.start()
+        imgBtnTrackPlay.setImageResource(R.drawable.ic_track_pause_100)
+        playerState = PlayerState.PLAYING
+        mainThreadHandler?.post(
+            createTrackTimeTask()
+        )
+    }
+
+    private fun pausePlayer() {
+        mediaPlayer.pause()
+        imgBtnTrackPlay.setImageResource(R.drawable.ic_track_play_100)
+        playerState = PlayerState.PAUSED
+    }
+
+    private fun createTrackTimeTask(): Runnable {
+        return object : Runnable {
+            override fun run() {
+                when (playerState) {
+                    PlayerState.PLAYING -> {
+                        val time = getCoverTimeMillis(mediaPlayer.currentPosition.toLong())
+                        trackTime.text = time.toString()
+                        mainThreadHandler?.postDelayed(this, TRACK_TIME_DELAY)
+                    }
+
+                    PlayerState.PAUSED -> {
+                        mainThreadHandler?.removeCallbacks(this)
+                    }
+
+                    PlayerState.PREPARED -> {
+                        trackTime.text = getString(R.string.track_start_time)
+                    }
+
+                    PlayerState.DEFAULT -> {}
+                }
+            }
+        }
+    }
+
     companion object {
         const val SETTING_ACTIVITY_LAST = "setting_activity_last"
         const val ACTIVITY_AUDIO_PLAYER_KEY = "key_for_audio_player_activity"
+
+        private const val TRACK_TIME_DELAY = 400L
+
     }
 }

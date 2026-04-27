@@ -40,7 +40,7 @@ class AudioPlayerActivity : AppCompatActivity() {
     private lateinit var trackCountryText: TextView
     private lateinit var trackCountry: TextView
     private lateinit var imgBtnTrackPlay: ImageView
-    private var playerState = STATE_DEFAULT
+    private var playerState = PlayerState.DEFAULT
     private var mediaPlayer = MediaPlayer()
     private var mainThreadHandler: Handler? = null
 
@@ -153,11 +153,15 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     private fun playbackControl() {
         when (playerState) {
-            STATE_PLAYING -> {
+            PlayerState.DEFAULT -> {
+
+            }
+
+            PlayerState.PLAYING -> {
                 pausePlayer()
             }
 
-            STATE_PREPARED, STATE_PAUSED -> {
+            PlayerState.PREPARED, PlayerState.PAUSED -> {
                 startPlayer()
             }
         }
@@ -168,18 +172,18 @@ class AudioPlayerActivity : AppCompatActivity() {
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
             imgBtnTrackPlay.setImageResource(R.drawable.ic_track_play_100)
-            playerState = STATE_PREPARED
+            playerState = PlayerState.PREPARED
         }
         mediaPlayer.setOnCompletionListener {
             imgBtnTrackPlay.setImageResource(R.drawable.ic_track_play_100)
-            playerState = STATE_PREPARED
+            playerState = PlayerState.PREPARED
         }
     }
 
     private fun startPlayer() {
         mediaPlayer.start()
         imgBtnTrackPlay.setImageResource(R.drawable.ic_track_pause_100)
-        playerState = STATE_PLAYING
+        playerState = PlayerState.PLAYING
         mainThreadHandler?.post(
             createTrackTimeTask()
         )
@@ -188,20 +192,28 @@ class AudioPlayerActivity : AppCompatActivity() {
     private fun pausePlayer() {
         mediaPlayer.pause()
         imgBtnTrackPlay.setImageResource(R.drawable.ic_track_play_100)
-        playerState = STATE_PAUSED
+        playerState = PlayerState.PAUSED
     }
 
     private fun createTrackTimeTask(): Runnable {
         return object : Runnable {
             override fun run() {
-                if (playerState == STATE_PLAYING) {
-                    val time = getCoverTimeMillis(mediaPlayer.currentPosition.toLong())
-                    trackTime.text = time.toString()
-                    mainThreadHandler?.postDelayed(this, TRACK_TIME_DELAY)
-                } else if (playerState == STATE_PAUSED) {
-                    mainThreadHandler?.removeCallbacks(this)
-                } else if (playerState == STATE_PREPARED) {
-                    trackTime.text = getString(R.string.track_start_time)
+                when (playerState) {
+                    PlayerState.PLAYING -> {
+                        val time = getCoverTimeMillis(mediaPlayer.currentPosition.toLong())
+                        trackTime.text = time.toString()
+                        mainThreadHandler?.postDelayed(this, TRACK_TIME_DELAY)
+                    }
+
+                    PlayerState.PAUSED -> {
+                        mainThreadHandler?.removeCallbacks(this)
+                    }
+
+                    PlayerState.PREPARED -> {
+                        trackTime.text = getString(R.string.track_start_time)
+                    }
+
+                    PlayerState.DEFAULT -> {}
                 }
             }
         }
@@ -211,10 +223,6 @@ class AudioPlayerActivity : AppCompatActivity() {
         const val SETTING_ACTIVITY_LAST = "setting_activity_last"
         const val ACTIVITY_AUDIO_PLAYER_KEY = "key_for_audio_player_activity"
 
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
         private const val TRACK_TIME_DELAY = 400L
 
     }

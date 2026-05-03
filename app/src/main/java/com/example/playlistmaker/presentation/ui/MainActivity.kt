@@ -1,25 +1,26 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation.ui
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.edit
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import com.example.playlistmaker.App.Companion.SETTING_PREFERENCES
-import com.example.playlistmaker.AudioPlayerActivity.Companion.ACTIVITY_AUDIO_PLAYER_KEY
-import com.example.playlistmaker.AudioPlayerActivity.Companion.SETTING_ACTIVITY_LAST
-import com.example.playlistmaker.SearchActivity.Companion.SEARCH_PREFERENCES
-import com.example.playlistmaker.SearchActivity.Companion.TRACK_KEY
-
+import com.example.playlistmaker.Creator
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.api.HistoryInteractor
+import com.example.playlistmaker.domain.api.SettingsInteractor
+import com.example.playlistmaker.presentation.ui.audioPlayer.AudioPlayerActivity
+import com.example.playlistmaker.presentation.ui.medicalLibrary.MedicalLibraryActivity
+import com.example.playlistmaker.presentation.ui.search.SearchActivity
+import com.example.playlistmaker.presentation.ui.setting.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
-    lateinit var sharedPrefsSetting: SharedPreferences
+    private lateinit var settingsInteractor: SettingsInteractor
+    private lateinit var historyInteractor: HistoryInteractor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,24 +31,24 @@ class MainActivity : AppCompatActivity() {
             view.updatePadding(top = statusBar.top)
             insets
         }
+        settingsInteractor = Creator.provideSettingsInteractor(this)
+        historyInteractor = Creator.provideHistoryInteractor(this)
 
-        sharedPrefsSetting = getSharedPreferences(SETTING_PREFERENCES, MODE_PRIVATE)
-        when (sharedPrefsSetting.getString(SETTING_ACTIVITY_LAST, "")) {
-            ACTIVITY_AUDIO_PLAYER_KEY -> {
-                val sharedPrefs = getSharedPreferences(SEARCH_PREFERENCES, MODE_PRIVATE)
-                val searchHistory = SearchHistory(sharedPrefs)
+        when (settingsInteractor.getLastActivity()) {
+            AudioPlayerActivity.Companion.ACTIVITY_AUDIO_PLAYER_KEY -> {
                 val intentAudioPlayer = Intent(this, AudioPlayerActivity::class.java)
-                intentAudioPlayer.putExtra(TRACK_KEY, searchHistory.historyTracks[0])
+                intentAudioPlayer.putExtra(
+                    SearchActivity.Companion.TRACK_KEY,
+                    historyInteractor.getLastTrack()
+                )
                 startActivity(intentAudioPlayer)
             }
         }
 
         val buttonSearch = findViewById<Button>(R.id.search)
-        val searchClickListener: View.OnClickListener = object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                val displaySearch = Intent(this@MainActivity, SearchActivity::class.java)
-                startActivity(displaySearch)
-            }
+        val searchClickListener: View.OnClickListener = View.OnClickListener {
+            val displaySearch = Intent(this@MainActivity, SearchActivity::class.java)
+            startActivity(displaySearch)
         }
         buttonSearch.setOnClickListener(searchClickListener)
 
@@ -67,9 +68,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        sharedPrefsSetting.edit {
-            putString(SETTING_ACTIVITY_LAST, ACTIVITY_MAIN_KEY)
-        }
+        settingsInteractor.saveLastActivity(ACTIVITY_MAIN_KEY)
     }
 
     companion object {

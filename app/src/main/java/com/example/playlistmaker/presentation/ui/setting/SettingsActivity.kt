@@ -1,19 +1,23 @@
-package com.example.playlistmaker
-
+package com.example.playlistmaker.presentation.ui.setting
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import com.example.playlistmaker.Creator
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.api.SettingsInteractor
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.textview.MaterialTextView
-import androidx.core.net.toUri
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.google.android.material.textview.MaterialTextView
 
 class SettingsActivity: AppCompatActivity() {
+    private lateinit var settingsInteractor: SettingsInteractor
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -23,6 +27,8 @@ class SettingsActivity: AppCompatActivity() {
             view.updatePadding(top = statusBar.top)
             insets
         }
+
+        settingsInteractor = Creator.provideSettingsInteractor(this)
 
         val buttonBack = findViewById<MaterialToolbar>(R.id.toolbar_settings)
         buttonBack.setNavigationOnClickListener {
@@ -61,9 +67,9 @@ class SettingsActivity: AppCompatActivity() {
         }
 
         val themeSwitcher = findViewById<SwitchMaterial>(R.id.theme_switcher_dark_theme)
-        themeSwitcher.isChecked = (applicationContext as App).getThemeSetting()
+        themeSwitcher.isChecked = settingsInteractor.getDarkThemeState()
         themeSwitcher.setOnCheckedChangeListener { themeSwitcher, checked ->
-            (applicationContext as App).switchTheme(checked)
+            settingsInteractor.setDarkMode(checked)
         }
     }
 }

@@ -97,7 +97,7 @@ class AudioPlayerActivity : AppCompatActivity() {
             trackName.text = track.trackName
             trackArtist.text = track.artistName
             val trackTime = track.trackTime
-            trackDuration.text = trackTime
+            trackDuration.text = getCoverTimeMillis(trackTime.toLong())
 
             if (track.collectionName.isNotEmpty()) {
                 trackAlbum.text = track.collectionName

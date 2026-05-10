@@ -1,26 +1,25 @@
-package com.example.playlistmaker.data
+package com.example.playlistmaker.data.sharedPrefs
 
 import android.content.Context
 import androidx.core.content.edit
 
-
-class SettingsManager(context: Context) {
+class SettingsPrefsManager(context: Context) : SettingPrefsClient {
     private val sharedPreferences =
         context.getSharedPreferences(SETTING_PREFERENCES, Context.MODE_PRIVATE)
 
-    fun putString(key: String, value: String) {
+    override fun putString(key: String, value: String) {
         sharedPreferences.edit { putString(key, value) }
     }
 
-    fun getString(key: String): String {
+    override fun getString(key: String): String {
         return sharedPreferences.getString(key, "")!!
     }
 
-    fun putBoolean(key: String, value: Boolean) {
+    override fun putBoolean(key: String, value: Boolean) {
         sharedPreferences.edit { putBoolean(key, value) }
     }
 
-    fun getBoolean(key: String): Boolean {
+    override fun getBoolean(key: String): Boolean {
         return sharedPreferences.getBoolean(key, false)
     }
 

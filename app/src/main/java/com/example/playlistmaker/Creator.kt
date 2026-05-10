@@ -1,12 +1,12 @@
 package com.example.playlistmaker
 
 import android.content.Context
-import com.example.playlistmaker.data.HistoryManager
 import com.example.playlistmaker.data.HistoryRepositoryImpl
-import com.example.playlistmaker.data.SettingsManager
 import com.example.playlistmaker.data.SettingsRepositoryImpl
 import com.example.playlistmaker.data.TracksRepositoryImpl
 import com.example.playlistmaker.data.network.RetrofitNetworkClient
+import com.example.playlistmaker.data.sharedPrefs.HistoryPrefsManager
+import com.example.playlistmaker.data.sharedPrefs.SettingsPrefsManager
 import com.example.playlistmaker.domain.api.HistoryInteractor
 import com.example.playlistmaker.domain.api.HistoryRepository
 import com.example.playlistmaker.domain.api.SettingsInteractor
@@ -27,8 +27,8 @@ object Creator {
     }
 
 
-    private fun getSettingsManager(context: Context): SettingsManager {
-        return SettingsManager(context)
+    private fun getSettingsManager(context: Context): SettingsPrefsManager {
+        return SettingsPrefsManager(context)
     }
 
     private fun getSettingsRepository(context: Context): SettingsRepository {
@@ -40,12 +40,12 @@ object Creator {
     }
 
 
-    private fun getHistoryManager(context: Context): HistoryManager {
-        return HistoryManager(context)
+    private fun getHistoryPrefsManager(context: Context): HistoryPrefsManager {
+        return HistoryPrefsManager(context)
     }
 
     private fun getSHistoryRepository(context: Context): HistoryRepository {
-        return HistoryRepositoryImpl(getHistoryManager(context))
+        return HistoryRepositoryImpl(getHistoryPrefsManager(context))
     }
 
     fun provideHistoryInteractor(context: Context): HistoryInteractor {

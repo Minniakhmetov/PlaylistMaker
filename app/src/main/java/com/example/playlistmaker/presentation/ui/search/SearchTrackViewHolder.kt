@@ -10,6 +10,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 
 class SearchTrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
@@ -26,7 +28,7 @@ class SearchTrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         tvTrackName.text = track.trackName
         tvTrackArtist.text = track.artistName
         tvTrackTime.text =
-            track.trackTime
+            SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTime.toLong())
         Glide
             .with(itemView)
             .load(track.artworkUrl100)

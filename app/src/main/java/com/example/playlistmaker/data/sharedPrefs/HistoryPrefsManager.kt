@@ -1,17 +1,17 @@
-package com.example.playlistmaker.data
+package com.example.playlistmaker.data.sharedPrefs
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.data.dto.TrackDtoSharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class HistoryManager(context: Context) {
+class HistoryPrefsManager(context: Context) : HistoryPrefsClient {
     private val sharedPreferences =
         context.getSharedPreferences(SEARCH_HISTORY_KEY, Context.MODE_PRIVATE)
     val gson = Gson()
-    var historyTracks: MutableList<Track> = mutableListOf()
+    override var historyTracks: MutableList<TrackDtoSharedPreferences> = mutableListOf()
     private var listener: SharedPreferences.OnSharedPreferenceChangeListener
 
     init {
@@ -23,7 +23,7 @@ class HistoryManager(context: Context) {
         sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
     }
 
-    fun saveTrack(track: Track) {
+    override fun saveTrack(track: TrackDtoSharedPreferences) {
         if (historyTracks.contains(track)) {
             if (historyTracks.indexOf(track) != 0) {
                 historyTracks.remove(track)
@@ -41,7 +41,7 @@ class HistoryManager(context: Context) {
     fun updateHistoryTracks() {
         val tracksHistoryJson = sharedPreferences.getString(SEARCH_HISTORY_KEY, "")
         if (tracksHistoryJson != "") {
-            val type = object : TypeToken<MutableList<Track>>() {}.type
+            val type = object : TypeToken<MutableList<TrackDtoSharedPreferences>>() {}.type
             historyTracks = gson.fromJson(tracksHistoryJson, type)
         } else {
             historyTracks.clear()
@@ -57,10 +57,11 @@ class HistoryManager(context: Context) {
         }
     }
 
-    fun clearHistory() {
+    override fun clearHistory() {
         sharedPreferences.edit { remove(SEARCH_HISTORY_KEY) }
         updateHistoryTracks()
     }
+
 
     companion object {
         const val SEARCH_HISTORY_KEY = "key_for_search_history"

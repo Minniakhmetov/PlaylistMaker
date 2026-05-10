@@ -1,9 +1,9 @@
 package com.example.playlistmaker.data.extension
 
-import com.example.playlistmaker.data.dto.TrackDto
+import com.example.playlistmaker.data.dto.TrackDtoSharedPreferences
 import com.example.playlistmaker.domain.models.Track
 
-fun TrackDto.toDomainModel(): Track {
+fun TrackDtoSharedPreferences.toDomainModel(): Track {
     return Track(
         trackId = trackId,
         trackName = trackName,

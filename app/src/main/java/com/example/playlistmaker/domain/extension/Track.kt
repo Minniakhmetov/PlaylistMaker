@@ -1,14 +1,14 @@
-package com.example.playlistmaker.data.extension
+package com.example.playlistmaker.domain.extension
 
-import com.example.playlistmaker.data.dto.TrackDto
+import com.example.playlistmaker.data.dto.TrackDtoSharedPreferences
 import com.example.playlistmaker.domain.models.Track
 
-fun TrackDto.toDomainModel(): Track {
-    return Track(
+fun Track.toTrackDtoSharedPreferencesModel(): TrackDtoSharedPreferences {
+    return TrackDtoSharedPreferences(
         trackId = trackId,
         trackName = trackName,
         artistName = artistName,
-        trackTime = trackTimeMillis,
+        trackTimeMillis = trackTime,
         artworkUrl100 = artworkUrl100,
         collectionName = collectionName,
         releaseDate = releaseDate,

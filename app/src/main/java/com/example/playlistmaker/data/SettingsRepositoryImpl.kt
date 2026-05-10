@@ -1,21 +1,23 @@
 package com.example.playlistmaker.data
 
 import androidx.appcompat.app.AppCompatDelegate
+import com.example.playlistmaker.data.sharedPrefs.SettingPrefsClient
 import com.example.playlistmaker.domain.api.SettingsRepository
 
 
-class SettingsRepositoryImpl(private val settingsManager: SettingsManager) : SettingsRepository {
+class SettingsRepositoryImpl(private val settingPrefsClient: SettingPrefsClient) :
+    SettingsRepository {
 
     override fun saveLastActivity(activity: String) {
-        settingsManager.putString(SETTING_ACTIVITY_LAST, activity)
+        settingPrefsClient.putString(SETTING_ACTIVITY_LAST, activity)
     }
 
     override fun getLastActivity(): String {
-        return settingsManager.getString(SETTING_ACTIVITY_LAST)
+        return settingPrefsClient.getString(SETTING_ACTIVITY_LAST)
     }
 
     override fun getDarkThemeState(): Boolean {
-        return settingsManager.getBoolean(SETTING_THEME_KEY)
+        return settingPrefsClient.getBoolean(SETTING_THEME_KEY)
     }
 
     override fun setDarkMode() {
@@ -36,7 +38,7 @@ class SettingsRepositoryImpl(private val settingsManager: SettingsManager) : Set
                 AppCompatDelegate.MODE_NIGHT_NO
             }
         )
-        settingsManager.putBoolean(SETTING_THEME_KEY, state)
+        settingPrefsClient.putBoolean(SETTING_THEME_KEY, state)
     }
 
     companion object {

@@ -1,26 +1,32 @@
 package com.example.playlistmaker.data
 
+import com.example.playlistmaker.data.extension.toDomainModel
+import com.example.playlistmaker.data.sharedPrefs.HistoryPrefsClient
 import com.example.playlistmaker.domain.api.HistoryRepository
+import com.example.playlistmaker.domain.extension.toTrackDtoSharedPreferencesModel
 import com.example.playlistmaker.domain.models.Track
 
-class HistoryRepositoryImpl(private val historyManager: HistoryManager) : HistoryRepository {
+class HistoryRepositoryImpl(private val historyPrefsClient: HistoryPrefsClient) :
+    HistoryRepository {
     override fun getLastTrack(): Track {
-        return historyManager.historyTracks[0]
+        return historyPrefsClient.historyTracks[0].toDomainModel()
     }
 
     override fun getTrack(id: Int): Track {
-        return historyManager.historyTracks[id]
+        return historyPrefsClient.historyTracks[id].toDomainModel()
     }
 
     override fun getTracks(): List<Track> {
-        return historyManager.historyTracks
+        return historyPrefsClient.historyTracks.map {
+            it.toDomainModel()
+        }
     }
 
     override fun clearHistory() {
-        historyManager.clearHistory()
+        historyPrefsClient.clearHistory()
     }
 
     override fun saveTrack(track: Track) {
-        historyManager.saveTrack(track)
+        historyPrefsClient.saveTrack(track.toTrackDtoSharedPreferencesModel())
     }
 }

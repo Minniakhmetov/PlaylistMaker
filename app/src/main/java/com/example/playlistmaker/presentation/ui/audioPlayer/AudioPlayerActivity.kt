@@ -1,6 +1,5 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation.ui.audioPlayer
 
-import android.content.SharedPreferences
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
@@ -11,21 +10,21 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
-import androidx.core.content.edit
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.example.playlistmaker.App.Companion.SETTING_PREFERENCES
-import com.example.playlistmaker.SearchActivity.Companion.TRACK_KEY
+import com.example.playlistmaker.Creator
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.api.SettingsInteractor
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.presentation.ui.search.SearchActivity
 import com.google.android.material.appbar.MaterialToolbar
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class AudioPlayerActivity : AppCompatActivity() {
-    lateinit var sharedPrefs: SharedPreferences
-
     private lateinit var trackImage: ImageView
     private lateinit var trackName: TextView
     private lateinit var trackArtist: TextView
@@ -43,6 +42,7 @@ class AudioPlayerActivity : AppCompatActivity() {
     private var playerState = PlayerState.DEFAULT
     private var mediaPlayer = MediaPlayer()
     private var mainThreadHandler: Handler? = null
+    private lateinit var settingsInteractor: SettingsInteractor
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,15 +68,17 @@ class AudioPlayerActivity : AppCompatActivity() {
         trackCountryText = findViewById(R.id.tv_audio_player_text_country)
         trackCountry = findViewById(R.id.tv_audio_player_value_country)
         imgBtnTrackPlay = findViewById(R.id.img_audio_player_track_play)
-
-        sharedPrefs = getSharedPreferences(SETTING_PREFERENCES, MODE_PRIVATE)
+        settingsInteractor = Creator.provideSettingsInteractor(this)
 
         val buttonBack = findViewById<MaterialToolbar>(R.id.toolbar_audio_player)
         buttonBack.setNavigationOnClickListener {
             finish()
         }
 
-        val track = IntentCompat.getParcelableExtra(intent, TRACK_KEY, Track::class.java)
+        val track = IntentCompat.getParcelableExtra(
+            intent,
+            SearchActivity.Companion.TRACK_KEY, Track::class.java
+        )
         if (track != null) {
             Glide
                 .with(this)
@@ -94,8 +96,8 @@ class AudioPlayerActivity : AppCompatActivity() {
                 .into(trackImage)
             trackName.text = track.trackName
             trackArtist.text = track.artistName
-            val trackTimeMillis = getCoverTimeMillis(track.trackTimeMillis.toLong())
-            trackDuration.text = trackTimeMillis
+            val trackTime = track.trackTime
+            trackDuration.text = getCoverTimeMillis(trackTime.toLong())
 
             if (track.collectionName.isNotEmpty()) {
                 trackAlbum.text = track.collectionName
@@ -132,9 +134,7 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        sharedPrefs.edit {
-            putString(SETTING_ACTIVITY_LAST, ACTIVITY_AUDIO_PLAYER_KEY)
-        }
+        settingsInteractor.saveLastActivity(ACTIVITY_AUDIO_PLAYER_KEY)
     }
 
     override fun onDestroy() {
@@ -220,10 +220,7 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val SETTING_ACTIVITY_LAST = "setting_activity_last"
         const val ACTIVITY_AUDIO_PLAYER_KEY = "key_for_audio_player_activity"
-
         private const val TRACK_TIME_DELAY = 400L
-
     }
 }

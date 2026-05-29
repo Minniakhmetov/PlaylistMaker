@@ -63,7 +63,7 @@ class AudioPlayerActivity : AppCompatActivity() {
             }
 
             viewModel.observePlayerState().observe(this) {
-                changeButtonImg(it == AudioPlayerViewModel.STATE_PLAYING)
+                changeButtonImg(it == PlayerState.PLAYING)
             }
 
         }

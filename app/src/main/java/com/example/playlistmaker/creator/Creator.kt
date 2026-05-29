@@ -3,6 +3,7 @@ package com.example.playlistmaker.creator
 
 import android.content.Context
 import com.example.playlistmaker.history.data.SearchHistoryRepositoryImpl
+import com.example.playlistmaker.history.data.dto.TrackDtoSharedPreferences
 import com.example.playlistmaker.history.data.dto.storage.PrefsStorageClient
 import com.example.playlistmaker.history.data.dto.storage.PrefsStorageClient.Companion.SEARCH_HISTORY_KEY
 import com.example.playlistmaker.history.domain.api.SearchHistoryInteractor
@@ -13,7 +14,6 @@ import com.example.playlistmaker.search.data.network.RetrofitNetworkClient
 import com.example.playlistmaker.search.domain.api.TracksInteractor
 import com.example.playlistmaker.search.domain.api.TracksRepository
 import com.example.playlistmaker.search.domain.impl.TracksInteractorImpl
-import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.settings.data.SettingsInteractorImpl
 import com.example.playlistmaker.settings.data.SettingsRepositoryImpl
 import com.example.playlistmaker.settings.data.sharedPrefs.SettingsPrefsManager
@@ -49,10 +49,10 @@ object Creator {
 
     private fun getSearchHistoryRepository(context: Context): SearchHistoryRepository {
         return SearchHistoryRepositoryImpl(
-            PrefsStorageClient<ArrayList<Track>>(
+            PrefsStorageClient<ArrayList<TrackDtoSharedPreferences>>(
                 context,
                 SEARCH_HISTORY_KEY,
-                object : TypeToken<ArrayList<Track>>() {}.type
+                object : TypeToken<ArrayList<TrackDtoSharedPreferences>>() {}.type
             )
         )
     }

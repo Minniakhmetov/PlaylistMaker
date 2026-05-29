@@ -42,8 +42,8 @@ class AudioPlayerViewModel(
 
     private val settingsInteractor = Creator.provideSettingsInteractor(context)
 
-    private val playerStateLiveData = MutableLiveData(STATE_DEFAULT)
-    fun observePlayerState(): LiveData<Int> = playerStateLiveData
+    private val playerStateLiveData = MutableLiveData(PlayerState.DEFAULT)
+    fun observePlayerState(): LiveData<PlayerState> = playerStateLiveData
 
     private val progressTimeLiveData = MutableLiveData(TRACK_TIME_START_VALUE)
     fun observeProgressTime(): LiveData<String> = progressTimeLiveData
@@ -53,7 +53,7 @@ class AudioPlayerViewModel(
     private val handler = Handler(Looper.getMainLooper())
 
     private val timerRunnable = Runnable {
-        if (playerStateLiveData.value == STATE_PLAYING) {
+        if (playerStateLiveData.value == PlayerState.PLAYING) {
             startTimerUpdate()
         }
     }
@@ -70,8 +70,10 @@ class AudioPlayerViewModel(
 
     fun onPlayButtonClicked() {
         when (playerStateLiveData.value) {
-            STATE_PLAYING -> pausePlayer()
-            STATE_PREPARED, STATE_PAUSED -> startPlayer()
+            PlayerState.DEFAULT -> {}
+            PlayerState.PREPARED, PlayerState.PAUSED -> startPlayer()
+            PlayerState.PLAYING -> pausePlayer()
+
         }
     }
 
@@ -79,24 +81,24 @@ class AudioPlayerViewModel(
         mediaPlayer.setDataSource(track.previewUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
-            playerStateLiveData.postValue(STATE_PREPARED)
+            playerStateLiveData.postValue(PlayerState.PREPARED)
         }
         mediaPlayer.setOnCompletionListener {
-            playerStateLiveData.postValue(STATE_PREPARED)
+            playerStateLiveData.postValue(PlayerState.PREPARED)
             resetTimer()
         }
     }
 
     private fun startPlayer() {
         mediaPlayer.start()
-        playerStateLiveData.postValue(STATE_PLAYING)
+        playerStateLiveData.postValue(PlayerState.PLAYING)
         startTimerUpdate()
     }
 
     private fun pausePlayer() {
         pauseTimer()
         mediaPlayer.pause()
-        playerStateLiveData.postValue(STATE_PAUSED)
+        playerStateLiveData.postValue(PlayerState.PAUSED)
     }
 
     private fun startTimerUpdate() {

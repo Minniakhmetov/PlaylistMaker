@@ -14,34 +14,15 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.main.ui.App
 import com.example.playlistmaker.search.domain.models.Track
+import com.example.playlistmaker.settings.domain.SettingsInteractor
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class AudioPlayerViewModel(
     private val track: Track,
     context: Context,
+    private val settingsInteractor: SettingsInteractor,
 ) : ViewModel() {
-    companion object {
-        const val ACTIVITY_AUDIO_PLAYER_KEY = "key_for_audio_player_activity"
-        const val TRACK_TIME_START_VALUE = "00:00"
-        private const val TRACK_TIME_DELAY = 400L
-
-
-        const val STATE_DEFAULT = 0
-        const val STATE_PREPARED = 1
-        const val STATE_PLAYING = 2
-        const val STATE_PAUSED = 3
-
-        fun getFactory(track: Track): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val app = (this[APPLICATION_KEY] as App)
-                AudioPlayerViewModel(track, app)
-            }
-        }
-    }
-
-    private val settingsInteractor = Creator.provideSettingsInteractor(context)
-
     private val playerStateLiveData = MutableLiveData(PlayerState.DEFAULT)
     fun observePlayerState(): LiveData<PlayerState> = playerStateLiveData
 
@@ -125,6 +106,20 @@ class AudioPlayerViewModel(
 
     fun onStop() {
         settingsInteractor.saveLastActivity(ACTIVITY_AUDIO_PLAYER_KEY)
+    }
+
+    companion object {
+        const val ACTIVITY_AUDIO_PLAYER_KEY = "key_for_audio_player_activity"
+        const val TRACK_TIME_START_VALUE = "00:00"
+        private const val TRACK_TIME_DELAY = 400L
+
+        fun getFactory(track: Track): ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val app = (this[APPLICATION_KEY] as App)
+                val settingsInteractor = Creator.provideSettingsInteractor(app)
+                AudioPlayerViewModel(track, app, settingsInteractor)
+            }
+        }
     }
 
 }

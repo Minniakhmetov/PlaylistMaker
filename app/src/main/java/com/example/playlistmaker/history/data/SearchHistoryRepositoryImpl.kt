@@ -17,8 +17,8 @@ class SearchHistoryRepositoryImpl(
         currentHistory.remove(track.toTrackDtoSharedPreferencesModel())
         currentHistory.add(0, track.toTrackDtoSharedPreferencesModel())
 
-        val history = if (currentHistory.size > 10) {
-            currentHistory.take(10)
+        val history = if (currentHistory.size > HISTORY_MAX_SIZE) {
+            currentHistory.take(HISTORY_MAX_SIZE)
         } else {
             currentHistory
         }
@@ -41,5 +41,9 @@ class SearchHistoryRepositoryImpl(
     override fun getLastTrack(): Track? {
         val tracks = getHistory().data
         return tracks?.first()
+    }
+
+    companion object {
+        const val HISTORY_MAX_SIZE = 10
     }
 }

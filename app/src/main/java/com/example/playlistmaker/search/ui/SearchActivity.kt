@@ -19,11 +19,6 @@ import com.example.playlistmaker.player.ui.AudioPlayerActivity
 import com.example.playlistmaker.search.domain.models.Track
 
 class SearchActivity : AppCompatActivity() {
-    companion object {
-        private const val CLICK_TRACK_DEBOUNCE_DELAY = 1000L
-        const val TRACK_KEY = "key_for_track"
-    }
-
     private var viewModel: SearchViewModel? = null
 
     private val tracksAdapter = SearchTracksAdapter {
@@ -203,5 +198,10 @@ class SearchActivity : AppCompatActivity() {
 
     private fun buttonClearSearchVisibility(s: CharSequence?): Boolean {
         return !s.isNullOrEmpty()
+    }
+
+    companion object {
+        private const val CLICK_TRACK_DEBOUNCE_DELAY = 1000L
+        const val TRACK_KEY = "key_for_track"
     }
 }

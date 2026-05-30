@@ -9,26 +9,15 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.playlistmaker.creator.Creator
+import com.example.playlistmaker.history.domain.api.SearchHistoryInteractor
+import com.example.playlistmaker.settings.domain.SettingsInteractor
 
 
-class MainActivityViewModel(context: Context) : ViewModel() {
-    companion object {
-
-        const val ACTIVITY_MAIN_KEY = "key_for_main_activity"
-        const val ACTIVITY_AUDIO_PLAYER_KEY = "key_for_audio_player_activity"
-
-
-        fun getFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val app = (this[APPLICATION_KEY] as App)
-                MainActivityViewModel(app)
-            }
-        }
-    }
-
-    private val historyInteractor = Creator.provideSearchHistoryInteractor(context)
-    private val settingsInteractor = Creator.provideSettingsInteractor(context)
-
+class MainActivityViewModel(
+    context: Context,
+    private val historyInteractor: SearchHistoryInteractor,
+    private val settingsInteractor: SettingsInteractor,
+) : ViewModel() {
     private val stateLiveData = MutableLiveData<MainState>()
     fun observeState(): LiveData<MainState> = stateLiveData
 
@@ -66,4 +55,17 @@ class MainActivityViewModel(context: Context) : ViewModel() {
         renderState(MainState.Start)
     }
 
+    companion object {
+        const val ACTIVITY_MAIN_KEY = "key_for_main_activity"
+        const val ACTIVITY_AUDIO_PLAYER_KEY = "key_for_audio_player_activity"
+
+        fun getFactory(): ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val app = (this[APPLICATION_KEY] as App)
+                val historyInteractor = Creator.provideSearchHistoryInteractor(app)
+                val settingsInteractor = Creator.provideSettingsInteractor(app)
+                MainActivityViewModel(app, historyInteractor, settingsInteractor)
+            }
+        }
+    }
 }

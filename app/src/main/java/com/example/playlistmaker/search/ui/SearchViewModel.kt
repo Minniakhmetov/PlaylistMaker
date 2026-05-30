@@ -17,25 +17,15 @@ import com.example.playlistmaker.history.domain.api.SearchHistoryInteractor
 import com.example.playlistmaker.main.ui.App
 import com.example.playlistmaker.search.domain.api.TracksInteractor
 import com.example.playlistmaker.search.domain.models.Track
+import com.example.playlistmaker.settings.domain.SettingsInteractor
 
-class SearchViewModel(private val context: Context) : ViewModel() {
+class SearchViewModel(
+    private val context: Context,
+    private val tracksInteractor: TracksInteractor,
+    private val historyInteractor: SearchHistoryInteractor,
+    private val settingInteractor: SettingsInteractor,
 
-    companion object {
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val SEARCH_REQUEST_TOKEN = Any()
-        const val ACTIVITY_SEARCH_KEY = "key_for_search_activity"
-
-        fun getFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val app = (this[APPLICATION_KEY] as App)
-                SearchViewModel(app)
-            }
-        }
-    }
-
-    private val tracksInteractor = Creator.provideTracksInteractor()
-    private val historyInteractor = Creator.provideSearchHistoryInteractor(context)
-    private val settingInteractor = Creator.provideSettingsInteractor(context)
+    ) : ViewModel() {
     private var latestSearchText: String? = null
     private val handler = Handler(Looper.getMainLooper())
     private val stateLiveData = MutableLiveData<SearchState>()
@@ -165,5 +155,21 @@ class SearchViewModel(private val context: Context) : ViewModel() {
 
     fun onStop() {
         settingInteractor.saveLastActivity(ACTIVITY_SEARCH_KEY)
+    }
+
+    companion object {
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private val SEARCH_REQUEST_TOKEN = Any()
+        const val ACTIVITY_SEARCH_KEY = "key_for_search_activity"
+
+        fun getFactory(): ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val app = (this[APPLICATION_KEY] as App)
+                val tracksInteractor = Creator.provideTracksInteractor()
+                val historyInteractor = Creator.provideSearchHistoryInteractor(app)
+                val settingInteractor = Creator.provideSettingsInteractor(app)
+                SearchViewModel(app, tracksInteractor, historyInteractor, settingInteractor)
+            }
+        }
     }
 }

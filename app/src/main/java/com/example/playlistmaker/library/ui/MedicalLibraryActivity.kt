@@ -5,7 +5,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityMedicalLibraryBinding
 
 class MedicalLibraryActivity : AppCompatActivity() {
@@ -15,7 +14,7 @@ class MedicalLibraryActivity : AppCompatActivity() {
         binding = ActivityMedicalLibraryBinding.inflate(layoutInflater)
         setContentView(binding.root)
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.medical_library_activity)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.medicalLibraryActivity) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets

@@ -7,12 +7,6 @@ import com.example.playlistmaker.settings.util.ThemeSettings
 
 class SettingsRepositoryImpl(private val settingPrefsClient: SettingPrefsClient) :
     SettingsRepository {
-
-    companion object {
-        const val SETTING_ACTIVITY_LAST_KEY = "key_setting_activity_last"
-        const val SETTING_THEME_KEY = "key_for_setting_theme"
-    }
-
     override fun getThemeSettings(): ThemeSettings {
         return ThemeSettings(settingPrefsClient.getBoolean(SETTING_THEME_KEY))
     }
@@ -28,4 +22,10 @@ class SettingsRepositoryImpl(private val settingPrefsClient: SettingPrefsClient)
     override fun getLastActivity(): String {
         return settingPrefsClient.getString(SETTING_ACTIVITY_LAST_KEY)
     }
+
+    companion object {
+        const val SETTING_ACTIVITY_LAST_KEY = "key_setting_activity_last"
+        const val SETTING_THEME_KEY = "key_for_setting_theme"
+    }
+
 }

@@ -20,8 +20,12 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRep
             }
 
             else -> {
-                Resource.Error("Проблемы со связью")
+                Resource.Error(COMMUNICATION_PROBLEMS)
             }
         }
+    }
+
+    companion object {
+        const val COMMUNICATION_PROBLEMS = "Проблемы со связью"
     }
 }

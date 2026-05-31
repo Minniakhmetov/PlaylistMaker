@@ -1,18 +1,11 @@
 package com.example.playlistmaker.player.ui
 
-import android.content.Context
 import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlistmaker.creator.Creator
-import com.example.playlistmaker.main.ui.App
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.settings.domain.SettingsInteractor
 import java.text.SimpleDateFormat
@@ -20,7 +13,6 @@ import java.util.Locale
 
 class AudioPlayerViewModel(
     private val track: Track,
-    context: Context,
     private val settingsInteractor: SettingsInteractor,
 ) : ViewModel() {
     private val playerStateLiveData = MutableLiveData(PlayerState.DEFAULT)
@@ -112,14 +104,6 @@ class AudioPlayerViewModel(
         const val ACTIVITY_AUDIO_PLAYER_KEY = "key_for_audio_player_activity"
         const val TRACK_TIME_START_VALUE = "00:00"
         private const val TRACK_TIME_DELAY = 400L
-
-        fun getFactory(track: Track): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val app = (this[APPLICATION_KEY] as App)
-                val settingsInteractor = Creator.provideSettingsInteractor(app)
-                AudioPlayerViewModel(track, app, settingsInteractor)
-            }
-        }
     }
 
 }

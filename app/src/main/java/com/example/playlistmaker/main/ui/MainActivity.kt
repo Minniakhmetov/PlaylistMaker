@@ -6,76 +6,73 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
-import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityMainBinding
 import com.example.playlistmaker.library.ui.MedicalLibraryActivity
 import com.example.playlistmaker.player.ui.AudioPlayerActivity
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.search.ui.SearchActivity
 import com.example.playlistmaker.settings.ui.SettingsActivity
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
-    private var viewModel: MainActivityViewModel? = null
+    private val viewModel by viewModel<MainActivityViewModel>()
 
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        viewModel.installTheme()
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main_activity)) { view, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.mainActivity) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        viewModel = ViewModelProvider(this, MainActivityViewModel.getFactory())
-            .get(MainActivityViewModel::class.java)
-        viewModel?.observeState()?.observe(this) {
+        viewModel.observeState().observe(this) {
             render(it)
         }
 
         binding.search.setOnClickListener {
-            viewModel?.onClickSearch()
+            viewModel.onClickSearch()
         }
         binding.settings.setOnClickListener {
-            viewModel?.onClickSetting()
+            viewModel.onClickSetting()
         }
         binding.medicalLibrary.setOnClickListener {
-            viewModel?.onClickMedicalLibrary()
+            viewModel.onClickMedicalLibrary()
         }
 
-        viewModel?.start()
+        viewModel.start()
     }
 
     override fun onPause() {
         super.onPause()
-        viewModel?.onPause()
+        viewModel.onPause()
     }
-
 
     override fun onStop() {
         super.onStop()
-        viewModel?.onStop()
+        viewModel.onStop()
     }
 
     fun render(state: MainState) {
         when (state) {
+            MainState.Start -> {}
             is MainState.OpenLastTrack -> startLastTrack(state.track)
             MainState.OpenMedicalLibraryActivity -> startMedicalLibraryActivity()
             MainState.OpenSearchActivity -> startSearchActivity()
             MainState.OpenSettingsActivity -> startSettingsActivity()
-            MainState.Start -> {}
         }
     }
 
     fun startLastTrack(track: Track) {
         val intentAudioPlayer = Intent(this, AudioPlayerActivity::class.java)
         intentAudioPlayer.putExtra(
-            SearchActivity.Companion.TRACK_KEY,
+            SearchActivity.TRACK_KEY,
             track
         )
         startActivity(intentAudioPlayer)

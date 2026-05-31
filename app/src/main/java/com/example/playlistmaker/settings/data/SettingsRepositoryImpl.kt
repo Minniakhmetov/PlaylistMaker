@@ -5,7 +5,9 @@ import com.example.playlistmaker.settings.data.sharedPrefs.SettingPrefsClient
 import com.example.playlistmaker.settings.domain.SettingsRepository
 import com.example.playlistmaker.settings.util.ThemeSettings
 
-class SettingsRepositoryImpl(private val settingPrefsClient: SettingPrefsClient) :
+class SettingsRepositoryImpl(
+    private val settingPrefsClient: SettingPrefsClient,
+) :
     SettingsRepository {
     override fun getThemeSettings(): ThemeSettings {
         return ThemeSettings(settingPrefsClient.getBoolean(SETTING_THEME_KEY))

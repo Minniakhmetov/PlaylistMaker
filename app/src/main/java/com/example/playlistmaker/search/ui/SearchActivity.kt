@@ -11,21 +11,21 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.example.playlistmaker.player.ui.AudioPlayerActivity
 import com.example.playlistmaker.search.domain.models.Track
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
-    private var viewModel: SearchViewModel? = null
+    private val viewModel by viewModel<SearchViewModel>()
 
     private val tracksAdapter = SearchTracksAdapter {
         if (clickDebounce()) {
             val intent = Intent(this, AudioPlayerActivity::class.java)
             intent.putExtra(TRACK_KEY, it)
-            viewModel?.onClickTrack(it)
+            viewModel.onClickTrack(it)
             startActivity(intent)
         }
     }
@@ -34,7 +34,7 @@ class SearchActivity : AppCompatActivity() {
         if (clickDebounce()) {
             val intent = Intent(this, AudioPlayerActivity::class.java)
             intent.putExtra(TRACK_KEY, it)
-            viewModel?.onClickTrackHistory(it)
+            viewModel.onClickTrackHistory(it)
             startActivity(intent)
         }
     }
@@ -60,9 +60,7 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
-        viewModel =
-            ViewModelProvider(this, SearchViewModel.getFactory()).get(SearchViewModel::class.java)
-        viewModel?.observeState()?.observe(this) {
+        viewModel.observeState().observe(this) {
             render(it)
         }
 
@@ -76,16 +74,16 @@ class SearchActivity : AppCompatActivity() {
         }
 
         binding.btnClearHistory.setOnClickListener {
-            viewModel?.clearHistory()
+            viewModel.clearHistory()
         }
 
         binding.messageButton.setOnClickListener {
-            viewModel?.repeatLastSearch()
+            viewModel.repeatLastSearch()
         }
 
         val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
         binding.buttonClearSearch.setOnClickListener {
-            viewModel?.removeLatestSearchText()
+            viewModel.removeLatestSearchText()
             binding.inputTextSearch.setText("")
             inputMethodManager?.hideSoftInputFromWindow(this.currentFocus?.windowToken, 0)
             tracksAdapter.tracks.clear()
@@ -95,13 +93,13 @@ class SearchActivity : AppCompatActivity() {
 
         binding.inputTextSearch.doOnTextChanged { text, start, before, count ->
             binding.buttonClearSearch.isVisible = buttonClearSearchVisibility(text)
-            viewModel?.searchDebounce(
+            viewModel.searchDebounce(
                 changedText = text.toString()
             )
         }
         binding.inputTextSearch.setOnFocusChangeListener { view, hasFocus ->
             if (hasFocus && binding.inputTextSearch.text.isEmpty() && !(binding.messagePlaceholder.isVisible)) {
-                viewModel?.searchDebounce(
+                viewModel.searchDebounce(
                     changedText = ""
                 )
             }
@@ -110,7 +108,7 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        viewModel?.onStop()
+        viewModel.onStop()
     }
 
     override fun onDestroy() {

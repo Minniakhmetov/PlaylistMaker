@@ -6,16 +6,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.lifecycle.ViewModelProvider
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.databinding.ActivitySettingsBinding
-import com.example.playlistmaker.settings.domain.SettingsInteractor
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsActivity : AppCompatActivity() {
-    private lateinit var binding: ActivitySettingsBinding
-    private lateinit var settingsInteractor: SettingsInteractor
 
-    private var viewModel: SettingsViewModel? = null
+    private val viewModel by viewModel<SettingsViewModel>()
+    private lateinit var binding: ActivitySettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,32 +26,26 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
-        viewModel = ViewModelProvider(this, SettingsViewModel.getFactory())
-            .get(SettingsViewModel::class.java)
-
-        settingsInteractor = Creator.provideSettingsInteractor(this)
-
         binding.toolbarSettings.setNavigationOnClickListener {
             finish()
         }
 
         binding.shareTheApp.setOnClickListener {
-            viewModel?.shareApp()
+            viewModel.shareApp()
         }
         binding.writeToSupport.setOnClickListener {
-            viewModel?.openSupport()
+            viewModel.openSupport()
         }
         binding.userAgreement.setOnClickListener {
-            viewModel?.openLink()
+            viewModel.openLink()
         }
 
         binding.themeSwitcherDarkTheme.setOnCheckedChangeListener { themeSwitcher, checked ->
-            viewModel?.updateThemeSetting(checked)
+            viewModel.updateThemeSetting(checked)
         }
 
-        viewModel?.observeThemeSettings()?.observe(this) {
+        viewModel.observeThemeSettings().observe(this) {
             binding.themeSwitcherDarkTheme.isChecked = it.darkTheme
-            settingsInteractor.installTheme()
         }
     }
 }

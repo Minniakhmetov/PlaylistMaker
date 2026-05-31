@@ -1,7 +1,7 @@
 package com.example.playlistmaker.history.data
 
 interface StorageClient<T> {
-    fun storeData(data: T)
-    fun getData(): T?
-    fun clearData()
+    fun storeData(key: String, data: T)
+    fun getData(key: String): T?
+    fun clearData(key: String)
 }

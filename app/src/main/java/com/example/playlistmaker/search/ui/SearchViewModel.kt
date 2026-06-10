@@ -1,20 +1,20 @@
 package com.example.playlistmaker.search.ui
 
-import android.content.Context
+
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.playlistmaker.R
 import com.example.playlistmaker.history.domain.api.SearchHistoryInteractor
 import com.example.playlistmaker.search.domain.api.TracksInteractor
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.settings.domain.SettingsInteractor
 
 class SearchViewModel(
-    private val context: Context,
+    private val messageCommunicationProblems: String,
+    private val messageNothingWasFound: String,
     private val tracksInteractor: TracksInteractor,
     private val historyInteractor: SearchHistoryInteractor,
     private val settingInteractor: SettingsInteractor,
@@ -64,7 +64,7 @@ class SearchViewModel(
                             errorMessage != null -> {
                                 renderState(
                                     SearchState.Error(
-                                        errorMessage = context.getString(R.string.communication_problems),
+                                        errorMessage = messageCommunicationProblems
                                     )
                                 )
                             }
@@ -72,7 +72,7 @@ class SearchViewModel(
                             tracks.isEmpty() -> {
                                 renderState(
                                     SearchState.Empty(
-                                        message = context.getString(R.string.nothing_was_found),
+                                        message = messageNothingWasFound
                                     )
                                 )
                             }

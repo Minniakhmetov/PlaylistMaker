@@ -10,24 +10,26 @@ import androidx.core.content.IntentCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.databinding.ActivityAudioPlayerBinding
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.search.ui.SearchActivity
-import com.example.playlistmaker.settings.domain.SettingsInteractor
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class AudioPlayerActivity : AppCompatActivity() {
 
+    private val viewModel: AudioPlayerViewModel by viewModel {
+        parametersOf(track)
+    }
+    private lateinit var track: Track
+
     private lateinit var binding: ActivityAudioPlayerBinding
-    private lateinit var viewModel: AudioPlayerViewModel
     private var mainThreadHandler: Handler? = null
-    private lateinit var settingsInteractor: SettingsInteractor
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,31 +43,24 @@ class AudioPlayerActivity : AppCompatActivity() {
             insets
         }
 
-        settingsInteractor = Creator.provideSettingsInteractor(this)
 
         binding.toolbarAudioPlayer.setNavigationOnClickListener {
             finish()
         }
 
-        val track = IntentCompat.getParcelableExtra(
+        track = IntentCompat.getParcelableExtra(
             intent,
             SearchActivity.Companion.TRACK_KEY, Track::class.java
-        )
+        ) ?: return
 
-        if (track != null) {
-            setupTrack(track)
-            viewModel = ViewModelProvider(this, AudioPlayerViewModel.getFactory(track)).get(
-                AudioPlayerViewModel::class.java
-            )
+        setupTrack(track)
 
-            viewModel.observeProgressTime().observe(this) {
-                binding.tvAudioPlayerTrackTime.text = it
-            }
+        viewModel.observeProgressTime().observe(this) {
+            binding.tvAudioPlayerTrackTime.text = it
+        }
 
-            viewModel.observePlayerState().observe(this) {
-                changeButtonImg(it == PlayerState.PLAYING)
-            }
-
+        viewModel.observePlayerState().observe(this) {
+            changeButtonImg(it == PlayerState.PLAYING)
         }
 
         mainThreadHandler = Handler(Looper.getMainLooper())

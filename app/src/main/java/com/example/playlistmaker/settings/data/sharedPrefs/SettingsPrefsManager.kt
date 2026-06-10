@@ -1,11 +1,11 @@
 package com.example.playlistmaker.settings.data.sharedPrefs
 
-import android.content.Context
+import android.content.SharedPreferences
 import androidx.core.content.edit
 
-class SettingsPrefsManager(context: Context) : SettingPrefsClient {
-    private val sharedPreferences =
-        context.getSharedPreferences(SETTING_PREFERENCES, Context.MODE_PRIVATE)
+class SettingsPrefsManager(
+    private val sharedPreferences: SharedPreferences,
+) : SettingPrefsClient {
 
     override fun putString(key: String, value: String) {
         sharedPreferences.edit { putString(key, value) }
@@ -21,9 +21,5 @@ class SettingsPrefsManager(context: Context) : SettingPrefsClient {
 
     override fun getBoolean(key: String): Boolean {
         return sharedPreferences.getBoolean(key, false)
-    }
-
-    companion object {
-        const val SETTING_PREFERENCES = "setting_preferences"
     }
 }

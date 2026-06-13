@@ -1,11 +1,14 @@
 package com.example.playlistmaker.main.ui
 
 import android.app.Application
+import com.example.playlistmaker.favoriteTracks.di.favoriteTracksViewModelModule
 import com.example.playlistmaker.history.di.historyDataModule
 import com.example.playlistmaker.history.di.historyInteractorModule
 import com.example.playlistmaker.history.di.historyRepositoryModule
+import com.example.playlistmaker.library.di.medicalLibraryViewModelModule
 import com.example.playlistmaker.main.di.mainViewModelModule
 import com.example.playlistmaker.player.di.playerViewModelModule
+import com.example.playlistmaker.playlists.di.playlistsViewModelModule
 import com.example.playlistmaker.search.di.searchDataModule
 import com.example.playlistmaker.search.di.searchInteractorModule
 import com.example.playlistmaker.search.di.searchRepositoryModule
@@ -47,6 +50,10 @@ class App : Application() {
                 sharingInteractorModule,
 
                 playerViewModelModule,
+
+                medicalLibraryViewModelModule,
+                favoriteTracksViewModelModule,
+                playlistsViewModelModule,
             )
         }
     }

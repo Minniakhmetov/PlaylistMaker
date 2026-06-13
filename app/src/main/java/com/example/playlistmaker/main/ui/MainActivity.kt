@@ -9,6 +9,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.playlistmaker.databinding.ActivityMainBinding
 import com.example.playlistmaker.library.ui.MedicalLibraryActivity
 import com.example.playlistmaker.player.ui.AudioPlayerActivity
+import com.example.playlistmaker.player.ui.AudioPlayerActivity.Companion.TRACK_KEY
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.search.ui.SearchActivity
 import com.example.playlistmaker.settings.ui.SettingsActivity
@@ -63,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         when (state) {
             MainState.Start -> {}
             is MainState.OpenLastTrack -> startLastTrack(state.track)
-            MainState.OpenMedicalLibraryActivity -> startMedicalLibraryActivity()
+            is MainState.OpenMedicalLibraryActivity -> startMedicalLibraryActivity(state.lastPage)
             MainState.OpenSearchActivity -> startSearchActivity()
             MainState.OpenSettingsActivity -> startSettingsActivity()
         }
@@ -72,15 +73,19 @@ class MainActivity : AppCompatActivity() {
     fun startLastTrack(track: Track) {
         val intentAudioPlayer = Intent(this, AudioPlayerActivity::class.java)
         intentAudioPlayer.putExtra(
-            SearchActivity.TRACK_KEY,
+            TRACK_KEY,
             track
         )
         startActivity(intentAudioPlayer)
     }
 
-    fun startMedicalLibraryActivity() {
+    fun startMedicalLibraryActivity(lastPage: String) {
         val displayMedicalLibrary =
             Intent(this@MainActivity, MedicalLibraryActivity::class.java)
+        displayMedicalLibrary.putExtra(
+            LIBRARY_PAGE_KEY,
+            lastPage
+        )
         startActivity(displayMedicalLibrary)
     }
 
@@ -92,5 +97,9 @@ class MainActivity : AppCompatActivity() {
     fun startSettingsActivity() {
         val displaySettings = Intent(this@MainActivity, SettingsActivity::class.java)
         startActivity(displaySettings)
+    }
+
+    companion object {
+        const val LIBRARY_PAGE_KEY = "key_for_track"
     }
 }

@@ -15,7 +15,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityAudioPlayerBinding
 import com.example.playlistmaker.search.domain.models.Track
-import com.example.playlistmaker.search.ui.SearchActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
@@ -50,7 +49,7 @@ class AudioPlayerActivity : AppCompatActivity() {
 
         track = IntentCompat.getParcelableExtra(
             intent,
-            SearchActivity.Companion.TRACK_KEY, Track::class.java
+            TRACK_KEY, Track::class.java
         ) ?: return
 
         setupTrack(track)
@@ -131,6 +130,10 @@ class AudioPlayerActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         viewModel.onStop()
+    }
+
+    companion object {
+        const val TRACK_KEY = "key_for_track"
     }
 
 }

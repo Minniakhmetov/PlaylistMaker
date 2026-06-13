@@ -1,9 +1,12 @@
 package com.example.playlistmaker.main.ui
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.playlistmaker.history.domain.api.SearchHistoryInteractor
+import com.example.playlistmaker.library.ui.MedicalLibraryViewModel.Companion.ACTIVITY_LIBRARY_FAVORITE_TRACKS_KEY
+import com.example.playlistmaker.library.ui.MedicalLibraryViewModel.Companion.ACTIVITY_LIBRARY_PLAYLISTS_KEY
 import com.example.playlistmaker.settings.domain.SettingsInteractor
 
 
@@ -19,11 +22,15 @@ class MainActivityViewModel(
     }
 
     fun start() {
-        val lastActivity = settingsInteractor.getLastActivity()
-        if (lastActivity == ACTIVITY_AUDIO_PLAYER_KEY) {
-            val lastTrack = historyInteractor.getLastTrack()
-            if (lastTrack != null) {
-                renderState(MainState.OpenLastTrack(lastActivity, lastTrack))
+        when(val lastActivity = settingsInteractor.getLastActivity()){
+            ACTIVITY_AUDIO_PLAYER_KEY -> {
+                val lastTrack = historyInteractor.getLastTrack()
+                if (lastTrack != null) {
+                    renderState(MainState.OpenLastTrack(lastActivity, lastTrack))
+                }
+            }
+            ACTIVITY_LIBRARY_FAVORITE_TRACKS_KEY, ACTIVITY_LIBRARY_PLAYLISTS_KEY -> {
+                renderState(MainState.OpenMedicalLibraryActivity(lastActivity))
             }
         }
     }
@@ -37,7 +44,7 @@ class MainActivityViewModel(
     }
 
     fun onClickMedicalLibrary() {
-        renderState(MainState.OpenMedicalLibraryActivity)
+        renderState(MainState.OpenMedicalLibraryActivity(""))
     }
 
     private fun renderState(state: MainState) {

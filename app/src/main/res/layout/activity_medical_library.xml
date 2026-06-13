@@ -1,9 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/medical_library_activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".library.ui.MedicalLibraryActivity">
+    android:background="?attr/colorPrimary"
+    android:orientation="vertical"
+    android:theme="@style/Theme.PlaylistMaker">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar_medical_library"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:contentInsetStartWithNavigation="64dp"
+        app:navigationIcon="@drawable/ic_arrow_back_24"
+        app:navigationIconTint="?attr/colorOnPrimary"
+        app:title="@string/medical_library"
+        app:titleTextAppearance="@style/MainTitleStyle" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout_medical_library"
+        style="@style/TabLayoutStyle"
+        app:tabTextAppearance="@style/TabLayoutTextStyle" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager_medical_library"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal" />
+</LinearLayout>

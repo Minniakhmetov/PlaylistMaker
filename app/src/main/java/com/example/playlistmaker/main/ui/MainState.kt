@@ -6,11 +6,15 @@ sealed interface MainState {
     object Start : MainState
 
     object OpenSearchActivity : MainState
-    object OpenMedicalLibraryActivity : MainState
+    //object OpenMedicalLibraryActivity : MainState
     object OpenSettingsActivity : MainState
     data class OpenLastTrack(
         val lastActivity: String,
         val track: Track,
+    ) : MainState
+
+    data class OpenMedicalLibraryActivity(
+        val lastPage: String,
     ) : MainState
 
 }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/message_favorite_tracks"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingTop="106dp"
+    android:visibility="gone">
+
+    <ImageView
+        android:id="@+id/favorite_tracks_message_image"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/ic_nothing_was_found_120" />
+
+    <TextView
+        android:id="@+id/favorite_tracks_message_text"
+        style="@style/SearchPlaceholderText"
+        android:text="@string/library_is_empty" />
+</LinearLayout>

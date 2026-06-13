@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         when (state) {
             MainState.Start -> {}
             is MainState.OpenLastTrack -> startLastTrack(state.track)
-            MainState.OpenMedicalLibraryActivity -> startMedicalLibraryActivity()
+            is MainState.OpenMedicalLibraryActivity -> startMedicalLibraryActivity(state.lastPage)
             MainState.OpenSearchActivity -> startSearchActivity()
             MainState.OpenSettingsActivity -> startSettingsActivity()
         }
@@ -78,9 +78,13 @@ class MainActivity : AppCompatActivity() {
         startActivity(intentAudioPlayer)
     }
 
-    fun startMedicalLibraryActivity() {
+    fun startMedicalLibraryActivity(lastPage: String) {
         val displayMedicalLibrary =
             Intent(this@MainActivity, MedicalLibraryActivity::class.java)
+        displayMedicalLibrary.putExtra(
+            LIBRARY_PAGE_KEY,
+            lastPage
+        )
         startActivity(displayMedicalLibrary)
     }
 
@@ -92,5 +96,9 @@ class MainActivity : AppCompatActivity() {
     fun startSettingsActivity() {
         val displaySettings = Intent(this@MainActivity, SettingsActivity::class.java)
         startActivity(displaySettings)
+    }
+
+    companion object {
+        const val LIBRARY_PAGE_KEY = "key_for_track"
     }
 }

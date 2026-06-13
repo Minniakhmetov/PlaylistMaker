@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/message_playlists"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:visibility="gone">
+
+    <Button
+        android:id="@+id/playlists_message_button"
+        style="@style/ButtonStyle"
+        android:text="@string/new_playlist" />
+
+    <ImageView
+        android:id="@+id/playlists_message_image"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="40dp"
+        android:src="@drawable/ic_nothing_was_found_120" />
+
+    <TextView
+        android:id="@+id/playlists_message_text"
+        style="@style/SearchPlaceholderText"
+        android:text="@string/no_playlists" />
+</LinearLayout>

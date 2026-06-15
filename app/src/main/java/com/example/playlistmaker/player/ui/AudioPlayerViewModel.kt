@@ -6,14 +6,13 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.playlistmaker.history.domain.api.SearchHistoryInteractor
 import com.example.playlistmaker.search.domain.models.Track
-import com.example.playlistmaker.settings.domain.SettingsInteractor
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class AudioPlayerViewModel(
-    private val track: Track,
-    private val settingsInteractor: SettingsInteractor,
+    private val historyInteractor: SearchHistoryInteractor
 ) : ViewModel() {
     private val playerStateLiveData = MutableLiveData(PlayerState.DEFAULT)
     fun observePlayerState(): LiveData<PlayerState> = playerStateLiveData
@@ -24,6 +23,8 @@ class AudioPlayerViewModel(
     private val mediaPlayer = MediaPlayer()
 
     private val handler = Handler(Looper.getMainLooper())
+    private val stateLiveData = MutableLiveData<AudioPlayerState>()
+    fun observeState(): LiveData<AudioPlayerState> = stateLiveData
 
     private val timerRunnable = Runnable {
         if (playerStateLiveData.value == PlayerState.PLAYING) {
@@ -32,7 +33,7 @@ class AudioPlayerViewModel(
     }
 
     init {
-        preparePlayer()
+        loadTrack()
     }
 
     override fun onCleared() {
@@ -50,7 +51,7 @@ class AudioPlayerViewModel(
         }
     }
 
-    private fun preparePlayer() {
+    private fun preparePlayer(track: Track) {
         mediaPlayer.setDataSource(track.previewUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
@@ -96,12 +97,23 @@ class AudioPlayerViewModel(
         pausePlayer()
     }
 
-    fun onStop() {
-        settingsInteractor.saveLastActivity(ACTIVITY_AUDIO_PLAYER_KEY)
+    fun loadTrack() {
+        val trackNew = historyInteractor.getLastTrack()
+        trackNew?.let {
+            renderState(
+                AudioPlayerState.ShowTrack(
+                    track = it
+                )
+            )
+            preparePlayer(trackNew)
+        }
+    }
+
+    private fun renderState(state: AudioPlayerState) {
+        stateLiveData.postValue(state)
     }
 
     companion object {
-        const val ACTIVITY_AUDIO_PLAYER_KEY = "key_for_audio_player_activity"
         const val TRACK_TIME_START_VALUE = "00:00"
         private const val TRACK_TIME_DELAY = 400L
     }

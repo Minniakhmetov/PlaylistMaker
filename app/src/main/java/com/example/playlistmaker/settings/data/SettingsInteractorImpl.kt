@@ -1,5 +1,6 @@
 package com.example.playlistmaker.settings.data
 
+import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.playlistmaker.settings.domain.SettingsInteractor
 import com.example.playlistmaker.settings.domain.SettingsRepository
@@ -27,11 +28,19 @@ class SettingsInteractorImpl(
         )
     }
 
-    override fun saveLastActivity(activity: String) {
-        repository.saveLastActivity(activity)
+    override fun saveLastDestinationId(lastDestinationId: Int) {
+        repository.saveLsatDestinationId(lastDestinationId)
     }
 
-    override fun getLastActivity(): String {
-        return repository.getLastActivity()
+    override fun getLastDestinationId(): Int {
+        return repository.getLsatDestinationId()
+    }
+
+    override fun saveLastPage(lastPage: Int) {
+        repository.saveLsatPage(lastPage)
+    }
+
+    override fun getLastPage(): Int {
+        return repository.getLsatPage()
     }
 }

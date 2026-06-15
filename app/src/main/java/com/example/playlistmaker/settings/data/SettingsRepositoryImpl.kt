@@ -17,16 +17,26 @@ class SettingsRepositoryImpl(
         settingPrefsClient.putBoolean(SETTING_THEME_KEY, settings.darkTheme)
     }
 
-    override fun saveLastActivity(activity: String) {
-        settingPrefsClient.putString(SETTING_ACTIVITY_LAST_KEY, activity)
+    override fun saveLsatDestinationId(lastDestinationId: Int) {
+        settingPrefsClient.putInt(SETTING_LAST_DESTINATION_KEY_ID, lastDestinationId)
     }
 
-    override fun getLastActivity(): String {
-        return settingPrefsClient.getString(SETTING_ACTIVITY_LAST_KEY)
+    override fun getLsatDestinationId(): Int {
+        return settingPrefsClient.getInt(SETTING_LAST_DESTINATION_KEY_ID)
+    }
+
+    override fun saveLsatPage(lastPage: Int) {
+        settingPrefsClient.putInt(SETTING_LAST_PAGE, lastPage)
+    }
+
+    override fun getLsatPage(): Int {
+        val id = settingPrefsClient.getInt(SETTING_LAST_PAGE)
+        return id
     }
 
     companion object {
-        const val SETTING_ACTIVITY_LAST_KEY = "key_setting_activity_last"
+        const val SETTING_LAST_DESTINATION_KEY_ID = "key_setting_last_destination_id"
+        const val SETTING_LAST_PAGE = "key_last_page"
         const val SETTING_THEME_KEY = "key_for_setting_theme"
     }
 

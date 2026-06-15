@@ -7,6 +7,9 @@ interface SettingsInteractor {
     fun updateThemeSetting(settings: ThemeSettings)
     fun installTheme()
 
-    fun saveLastActivity(activity: String)
-    fun getLastActivity(): String
+    fun saveLastDestinationId(lastDestinationId: Int)
+    fun getLastDestinationId(): Int
+
+    fun saveLastPage(lastPage: Int)
+    fun getLastPage(): Int
 }

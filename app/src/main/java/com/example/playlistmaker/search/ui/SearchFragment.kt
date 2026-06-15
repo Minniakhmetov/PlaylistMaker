@@ -1,85 +1,68 @@
 package com.example.playlistmaker.search.ui
 
-import android.content.Intent
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.ActivitySearchBinding
-import com.example.playlistmaker.player.ui.AudioPlayerActivity
-import com.example.playlistmaker.player.ui.AudioPlayerActivity.Companion.TRACK_KEY
+import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.search.domain.models.Track
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class SearchActivity : AppCompatActivity() {
-
-    private val viewModel: SearchViewModel by viewModel{
+class SearchFragment : Fragment() {
+    private val viewModel: SearchViewModel by viewModel {
         parametersOf(
             getString(R.string.communication_problems),
             getString(R.string.nothing_was_found)
         )
     }
-
-    private val tracksAdapter = SearchTracksAdapter {
-        if (clickDebounce()) {
-            val intent = Intent(this, AudioPlayerActivity::class.java)
-            intent.putExtra(TRACK_KEY, it)
-            viewModel.onClickTrack(it)
-            startActivity(intent)
-        }
-    }
-
-    private val historyTracksAdapter = SearchTracksAdapter {
-        if (clickDebounce()) {
-            val intent = Intent(this, AudioPlayerActivity::class.java)
-            intent.putExtra(TRACK_KEY, it)
-            viewModel.onClickTrackHistory(it)
-            startActivity(intent)
-        }
-    }
-
     private var isClickAllowed = true
     private val handler = Handler(Looper.getMainLooper())
-
-    private lateinit var binding: ActivitySearchBinding
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
+    private val tracksAdapter = SearchTracksAdapter { track ->
+        if (clickDebounce()) {
+            findNavController().navigate(R.id.action_searchFragment_to_audioPlayerFragment)
+            viewModel.onClickTrack(track)
+        }
+    }
+    private val historyTracksAdapter = SearchTracksAdapter { track ->
+        if (clickDebounce()) {
+            findNavController().navigate(R.id.action_searchFragment_to_audioPlayerFragment)
+            viewModel.onClickTrackHistory(track)
+        }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
 
-        enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(binding.searchActivity) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
-        viewModel.observeState().observe(this) {
+        viewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
         }
+        return binding.root
+    }
 
-        binding.tracksList.layoutManager = LinearLayoutManager(this)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.tracksList.layoutManager = LinearLayoutManager(requireContext())
         binding.tracksList.adapter = tracksAdapter
-        binding.historyTracks.layoutManager = LinearLayoutManager(this)
+        binding.historyTracks.layoutManager = LinearLayoutManager(requireContext())
         binding.historyTracks.adapter = historyTracksAdapter
-
-        binding.toolbarSearch.setNavigationOnClickListener {
-            finish()
-        }
 
         binding.btnClearHistory.setOnClickListener {
             viewModel.clearHistory()
@@ -89,11 +72,12 @@ class SearchActivity : AppCompatActivity() {
             viewModel.repeatLastSearch()
         }
 
-        val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+        val inputMethodManager =
+            activity?.getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
         binding.buttonClearSearch.setOnClickListener {
             viewModel.removeLatestSearchText()
             binding.inputTextSearch.setText("")
-            inputMethodManager?.hideSoftInputFromWindow(this.currentFocus?.windowToken, 0)
+            inputMethodManager?.hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
             tracksAdapter.tracks.clear()
             tracksAdapter.notifyDataSetChanged()
             binding.messagePlaceholder.isVisible = false
@@ -105,6 +89,7 @@ class SearchActivity : AppCompatActivity() {
                 changedText = text.toString()
             )
         }
+
         binding.inputTextSearch.setOnFocusChangeListener { view, hasFocus ->
             if (hasFocus && binding.inputTextSearch.text.isEmpty() && !(binding.messagePlaceholder.isVisible)) {
                 viewModel.searchDebounce(
@@ -114,13 +99,9 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        viewModel.onStop()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun clickDebounce(): Boolean {
@@ -130,6 +111,17 @@ class SearchActivity : AppCompatActivity() {
             handler.postDelayed({ isClickAllowed = true }, CLICK_TRACK_DEBOUNCE_DELAY)
         }
         return current
+    }
+
+    fun render(state: SearchState) {
+        when (state) {
+            is SearchState.Loading -> showLoading()
+            is SearchState.Content -> showContent(state.tracks)
+            is SearchState.ContentHistory -> showContentHistory(state.tracks)
+            is SearchState.Error -> showError(state.errorMessage)
+            is SearchState.Empty -> showEmpty(state.message)
+            SearchState.Start -> showStart()
+        }
     }
 
     fun showStart() {
@@ -189,17 +181,6 @@ class SearchActivity : AppCompatActivity() {
         binding.llSearchHistory.isVisible = false
         tracksAdapter.tracks.clear()
         tracksAdapter.notifyDataSetChanged()
-    }
-
-    fun render(state: SearchState) {
-        when (state) {
-            is SearchState.Loading -> showLoading()
-            is SearchState.Content -> showContent(state.tracks)
-            is SearchState.ContentHistory -> showContentHistory(state.tracks)
-            is SearchState.Error -> showError(state.errorMessage)
-            is SearchState.Empty -> showEmpty(state.message)
-            SearchState.Start -> showStart()
-        }
     }
 
     private fun buttonClearSearchVisibility(s: CharSequence?): Boolean {

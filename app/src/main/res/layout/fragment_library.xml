@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/medical_library_activity"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_medical_library_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorPrimary"
     android:orientation="vertical"
-    android:theme="@style/Theme.PlaylistMaker">
+    android:theme="@style/Theme.PlaylistMaker"
+    tools:context=".library.ui.LibraryFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar_medical_library"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:contentInsetStartWithNavigation="64dp"
-        app:navigationIcon="@drawable/ic_arrow_back_24"
-        app:navigationIconTint="?attr/colorOnPrimary"
         app:title="@string/medical_library"
         app:titleTextAppearance="@style/MainTitleStyle" />
 

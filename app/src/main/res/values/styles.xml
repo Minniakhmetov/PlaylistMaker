@@ -141,6 +141,7 @@
     <style name="BottomNavStyle">
         <item name="itemIconTint">@color/bottom_nav_color</item>
         <item name="itemTextColor">@color/bottom_nav_color</item>
+        <item name="android:background">?attr/colorPrimary</item>
     </style>
 
     <style name="BottomNavTextActive">

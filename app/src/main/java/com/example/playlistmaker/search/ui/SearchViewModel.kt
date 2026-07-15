@@ -10,14 +10,12 @@ import androidx.lifecycle.ViewModel
 import com.example.playlistmaker.history.domain.api.SearchHistoryInteractor
 import com.example.playlistmaker.search.domain.api.TracksInteractor
 import com.example.playlistmaker.search.domain.models.Track
-import com.example.playlistmaker.settings.domain.SettingsInteractor
 
 class SearchViewModel(
     private val messageCommunicationProblems: String,
     private val messageNothingWasFound: String,
     private val tracksInteractor: TracksInteractor,
     private val historyInteractor: SearchHistoryInteractor,
-    private val settingInteractor: SettingsInteractor,
 
     ) : ViewModel() {
     private var latestSearchText: String? = null
@@ -146,13 +144,8 @@ class SearchViewModel(
         handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
     }
 
-    fun onStop() {
-        settingInteractor.saveLastActivity(ACTIVITY_SEARCH_KEY)
-    }
-
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private val SEARCH_REQUEST_TOKEN = Any()
-        const val ACTIVITY_SEARCH_KEY = "key_for_search_activity"
     }
 }

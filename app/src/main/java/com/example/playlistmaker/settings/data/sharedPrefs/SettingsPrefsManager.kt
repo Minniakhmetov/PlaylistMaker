@@ -6,15 +6,6 @@ import androidx.core.content.edit
 class SettingsPrefsManager(
     private val sharedPreferences: SharedPreferences,
 ) : SettingPrefsClient {
-
-    override fun putString(key: String, value: String) {
-        sharedPreferences.edit { putString(key, value) }
-    }
-
-    override fun getString(key: String): String {
-        return sharedPreferences.getString(key, "")!!
-    }
-
     override fun putBoolean(key: String, value: Boolean) {
         sharedPreferences.edit { putBoolean(key, value) }
     }

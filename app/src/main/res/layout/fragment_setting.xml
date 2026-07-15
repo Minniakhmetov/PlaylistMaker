@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/settings_activity"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_settings_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorPrimary"
     android:orientation="vertical"
-    android:theme="@style/Theme.PlaylistMaker">
+    android:theme="@style/Theme.PlaylistMaker"
+    tools:context=".settings.ui.SettingsFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar_settings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:contentInsetStartWithNavigation="64dp"
-        app:navigationIcon="@drawable/ic_arrow_back_24"
-        app:navigationIconTint="?attr/colorOnPrimary"
         app:title="@string/settings"
-        app:titleTextAppearance="@style/MainTitleStyle"/>
+        app:titleTextAppearance="@style/MainTitleStyle" />
 
 
     <com.google.android.material.switchmaterial.SwitchMaterial
@@ -25,23 +24,23 @@
         android:layout_marginTop="24dp"
         android:checked="false"
         android:gravity="center_vertical"
-        android:text="@string/dark_theme"/>
+        android:text="@string/dark_theme" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/share_the_app"
-        android:text="@string/share_the_app"
+        style="@style/SettingButtonStyle"
         android:drawableEnd="@drawable/ic_share_the_app_24"
-        style="@style/SettingButtonStyle"/>
+        android:text="@string/share_the_app" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/write_to_support"
-        android:text="@string/write_to_support"
+        style="@style/SettingButtonStyle"
         android:drawableEnd="@drawable/ic_write_to_support_24"
-        style="@style/SettingButtonStyle"/>
+        android:text="@string/write_to_support" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/user_agreement"
-        android:text="@string/user_agreement"
+        style="@style/SettingButtonStyle"
         android:drawableEnd="@drawable/ic_user_agreement_24"
-        style="@style/SettingButtonStyle"/>
+        android:text="@string/user_agreement" />
 </LinearLayout>

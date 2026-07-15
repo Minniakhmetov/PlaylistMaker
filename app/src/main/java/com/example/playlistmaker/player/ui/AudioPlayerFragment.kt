@@ -4,61 +4,63 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.TypedValue
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.IntentCompat
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.ActivityAudioPlayerBinding
+import com.example.playlistmaker.databinding.FragmentAudioPlayerBinding
 import com.example.playlistmaker.search.domain.models.Track
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class AudioPlayerActivity : AppCompatActivity() {
-
-    private val viewModel: AudioPlayerViewModel by viewModel {
-        parametersOf(track)
-    }
-    private lateinit var track: Track
-
-    private lateinit var binding: ActivityAudioPlayerBinding
+class AudioPlayerFragment : Fragment() {
+    private val viewModel by viewModel<AudioPlayerViewModel>()
+    private var _binding: FragmentAudioPlayerBinding? = null
+    private val binding get() = _binding!!
     private var mainThreadHandler: Handler? = null
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityAudioPlayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(binding.audioPlayerActivity) { v, insets ->
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentAudioPlayerBinding.inflate(inflater, container, false)
+
+
+        viewModel.observeState().observe(viewLifecycleOwner) {
+            render(it)
+        }
+
+        return binding.root
+
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.audioPlayerActivity) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            view.setPadding(0, 0, 0, systemBars.bottom)
             insets
         }
 
-
         binding.toolbarAudioPlayer.setNavigationOnClickListener {
-            finish()
+            findNavController().navigateUp()
         }
 
-        track = IntentCompat.getParcelableExtra(
-            intent,
-            TRACK_KEY, Track::class.java
-        ) ?: return
-
-        setupTrack(track)
-
-        viewModel.observeProgressTime().observe(this) {
+        viewModel.observeProgressTime().observe(viewLifecycleOwner) {
             binding.tvAudioPlayerTrackTime.text = it
         }
 
-        viewModel.observePlayerState().observe(this) {
+        viewModel.observePlayerState().observe(viewLifecycleOwner) {
             changeButtonImg(it == PlayerState.PLAYING)
         }
 
@@ -68,6 +70,16 @@ class AudioPlayerActivity : AppCompatActivity() {
         binding.imgAudioPlayerTrackPlay.setOnClickListener {
             viewModel.onPlayButtonClicked()
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.onPause()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun changeButtonImg(isPlaying: Boolean) {
@@ -122,18 +134,14 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     fun getCoverReleaseDate(releaseDate: String): String? = releaseDate.take(4)
 
-    override fun onPause() {
-        super.onPause()
-        viewModel.onPause()
+    fun render(state: AudioPlayerState) {
+        when (state) {
+            is AudioPlayerState.ShowTrack -> showTrack(state.track)
+        }
     }
 
-    override fun onStop() {
-        super.onStop()
-        viewModel.onStop()
-    }
-
-    companion object {
-        const val TRACK_KEY = "key_for_track"
+    fun showTrack(track: Track) {
+        setupTrack(track)
     }
 
 }

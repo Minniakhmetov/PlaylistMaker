@@ -13,26 +13,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PlaylistMaker">
-        <activity
-            android:name=".player.ui.AudioPlayerActivity"
-            android:exported="false" />
-        <activity
-            android:name=".library.ui.MedicalLibraryActivity"
-            android:exported="false" />
-        <activity
-            android:name=".search.ui.SearchActivity"
-            android:exported="false" />
-        <activity
-            android:name=".settings.ui.SettingsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".main.ui.MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        <activity android:name=".main.ui.RootActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustNothing">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
         </activity>
     </application>
 

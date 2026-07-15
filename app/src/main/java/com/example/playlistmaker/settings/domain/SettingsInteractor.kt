@@ -6,7 +6,4 @@ interface SettingsInteractor {
     fun getThemeSettings(): ThemeSettings
     fun updateThemeSetting(settings: ThemeSettings)
     fun installTheme()
-
-    fun saveLastActivity(activity: String)
-    fun getLastActivity(): String
 }

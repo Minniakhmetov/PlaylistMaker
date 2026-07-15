@@ -27,11 +27,4 @@ class SettingsInteractorImpl(
         )
     }
 
-    override fun saveLastActivity(activity: String) {
-        repository.saveLastActivity(activity)
-    }
-
-    override fun getLastActivity(): String {
-        return repository.getLastActivity()
-    }
 }

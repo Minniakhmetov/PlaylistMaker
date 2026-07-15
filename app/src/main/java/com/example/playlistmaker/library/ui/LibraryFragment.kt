@@ -11,7 +11,6 @@ import com.google.android.material.tabs.TabLayoutMediator
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LibraryFragment : Fragment(), SelectPage {
-    private val viewModel by viewModel<MedicalLibraryViewModel>()
     private var _binding: FragmentLibraryBinding? = null
     private val binding get() = _binding!!
     private lateinit var tabMediator: TabLayoutMediator
@@ -29,10 +28,6 @@ class LibraryFragment : Fragment(), SelectPage {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        if (savedInstanceState == null) {
-            viewModel.getLastPage()
-        }
 
         binding.viewPagerMedicalLibrary.adapter =
             FragmentsAdapter(
@@ -56,14 +51,6 @@ class LibraryFragment : Fragment(), SelectPage {
         }
         tabMediator.attach()
 
-        viewModel.observeState().observe(viewLifecycleOwner) {
-            render(it)
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        viewModel.saveLastPage(binding.viewPagerMedicalLibrary.currentItem)
     }
 
     override fun onDestroyView() {
@@ -72,15 +59,6 @@ class LibraryFragment : Fragment(), SelectPage {
         tabMediator.detach()
     }
 
-    fun render(state: LibraryState) {
-        when (state) {
-            is LibraryState.OpenLastPage -> openLastPage(state.lastPageId)
-        }
-    }
-
-    fun openLastPage(lastPageId: Int) {
-        navigateTo(lastPageId)
-    }
 
     override fun navigateTo(page: Int) {
         binding.viewPagerMedicalLibrary.currentItem = page

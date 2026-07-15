@@ -77,7 +77,7 @@ class SearchFragment : Fragment() {
         binding.buttonClearSearch.setOnClickListener {
             viewModel.removeLatestSearchText()
             binding.inputTextSearch.setText("")
-            inputMethodManager?.hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
+            inputMethodManager?.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, 0)
             tracksAdapter.tracks.clear()
             tracksAdapter.notifyDataSetChanged()
             binding.messagePlaceholder.isVisible = false

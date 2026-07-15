@@ -6,10 +6,4 @@ interface SettingsInteractor {
     fun getThemeSettings(): ThemeSettings
     fun updateThemeSetting(settings: ThemeSettings)
     fun installTheme()
-
-    fun saveLastDestinationId(lastDestinationId: Int)
-    fun getLastDestinationId(): Int
-
-    fun saveLastPage(lastPage: Int)
-    fun getLastPage(): Int
 }

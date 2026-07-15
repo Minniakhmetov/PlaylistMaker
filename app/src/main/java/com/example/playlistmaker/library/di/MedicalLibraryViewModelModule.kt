@@ -6,6 +6,6 @@ import org.koin.dsl.module
 
 val medicalLibraryViewModelModule = module {
     viewModel {
-        MedicalLibraryViewModel(get())
+        MedicalLibraryViewModel()
     }
 }

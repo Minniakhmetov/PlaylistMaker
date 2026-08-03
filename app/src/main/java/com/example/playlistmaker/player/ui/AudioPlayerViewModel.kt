@@ -28,6 +28,8 @@ class AudioPlayerViewModel(
     private val stateLiveData = MutableLiveData<AudioPlayerState>()
     fun observeState(): LiveData<AudioPlayerState> = stateLiveData
 
+    private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
+
     init {
         loadTrack()
     }
@@ -72,13 +74,12 @@ class AudioPlayerViewModel(
     }
 
     private fun startTimerUpdate() {
+        timerJob?.cancel()
         timerJob = viewModelScope.launch {
             while (mediaPlayer.isPlaying) {
                 delay(TRACK_TIME_DELAY)
                 progressTimeLiveData.postValue(
-                    SimpleDateFormat("mm:ss", Locale.getDefault()).format(
-                        mediaPlayer.currentPosition
-                    )
+                    dateFormat.format(mediaPlayer.currentPosition)
                 )
             }
         }

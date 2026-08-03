@@ -11,15 +11,13 @@ class RetrofitNetworkClient(private val tracksService: SearchTracksApi) : Networ
 
     override suspend fun doRequest(dto: Any): Response {
         if (dto is SearchTracksRequest) {
-            return withContext(Dispatchers.IO){
-                try {
+            return try {
                     val resp = tracksService.getTracks(dto.expression)
                     resp.apply {
                         resultCode = 200
                     }
-                } catch (e: IOException){
-                    Response().apply { resultCode = 400 }
-                }
+            } catch (e: IOException){
+                Response().apply { resultCode = 400 }
             }
         } else {
             return Response().apply { resultCode = 400 }

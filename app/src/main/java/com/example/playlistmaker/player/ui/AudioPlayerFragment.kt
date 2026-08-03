@@ -1,8 +1,6 @@
 package com.example.playlistmaker.player.ui
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -25,7 +23,6 @@ class AudioPlayerFragment : Fragment() {
     private val viewModel by viewModel<AudioPlayerViewModel>()
     private var _binding: FragmentAudioPlayerBinding? = null
     private val binding get() = _binding!!
-    private var mainThreadHandler: Handler? = null
 
 
     override fun onCreateView(
@@ -64,7 +61,6 @@ class AudioPlayerFragment : Fragment() {
             changeButtonImg(it == PlayerState.PLAYING)
         }
 
-        mainThreadHandler = Handler(Looper.getMainLooper())
         binding.tvAudioPlayerTrackTime.text = getString(R.string.track_start_time)
 
         binding.imgAudioPlayerTrackPlay.setOnClickListener {

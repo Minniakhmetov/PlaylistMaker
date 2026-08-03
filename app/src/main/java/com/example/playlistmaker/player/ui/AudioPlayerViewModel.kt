@@ -1,13 +1,15 @@
 package com.example.playlistmaker.player.ui
 
 import android.media.MediaPlayer
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.history.domain.api.SearchHistoryInteractor
 import com.example.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -22,15 +24,11 @@ class AudioPlayerViewModel(
 
     private val mediaPlayer = MediaPlayer()
 
-    private val handler = Handler(Looper.getMainLooper())
+    private var timerJob: Job? = null
     private val stateLiveData = MutableLiveData<AudioPlayerState>()
     fun observeState(): LiveData<AudioPlayerState> = stateLiveData
 
-    private val timerRunnable = Runnable {
-        if (playerStateLiveData.value == PlayerState.PLAYING) {
-            startTimerUpdate()
-        }
-    }
+    private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
 
     init {
         loadTrack()
@@ -76,20 +74,23 @@ class AudioPlayerViewModel(
     }
 
     private fun startTimerUpdate() {
-        progressTimeLiveData.postValue(
-            SimpleDateFormat("mm:ss", Locale.getDefault()).format(
-                mediaPlayer.currentPosition
-            )
-        )
-        handler.postDelayed(timerRunnable, TRACK_TIME_DELAY)
+        timerJob?.cancel()
+        timerJob = viewModelScope.launch {
+            while (mediaPlayer.isPlaying) {
+                delay(TRACK_TIME_DELAY)
+                progressTimeLiveData.postValue(
+                    dateFormat.format(mediaPlayer.currentPosition)
+                )
+            }
+        }
     }
 
     private fun pauseTimer() {
-        handler.removeCallbacks(timerRunnable)
+        timerJob?.cancel()
     }
 
     private fun resetTimer() {
-        handler.removeCallbacks(timerRunnable)
+        timerJob?.cancel()
         progressTimeLiveData.postValue(TRACK_TIME_START_VALUE)
     }
 

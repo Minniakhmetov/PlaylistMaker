@@ -2,8 +2,6 @@ package com.example.playlistmaker.search.ui
 
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,11 +9,14 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -27,7 +28,6 @@ class SearchFragment : Fragment() {
         )
     }
     private var isClickAllowed = true
-    private val handler = Handler(Looper.getMainLooper())
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
     private val tracksAdapter = SearchTracksAdapter { track ->
@@ -97,6 +97,8 @@ class SearchFragment : Fragment() {
                 )
             }
         }
+
+        isClickAllowed = true
     }
 
     override fun onDestroyView() {
@@ -108,7 +110,10 @@ class SearchFragment : Fragment() {
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, CLICK_TRACK_DEBOUNCE_DELAY)
+            lifecycleScope.launch {
+                delay(CLICK_TRACK_DEBOUNCE_DELAY)
+                isClickAllowed = true
+            }
         }
         return current
     }

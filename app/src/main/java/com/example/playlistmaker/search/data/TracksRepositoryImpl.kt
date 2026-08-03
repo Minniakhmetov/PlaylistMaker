@@ -7,20 +7,22 @@ import com.example.playlistmaker.search.domain.api.TracksRepository
 import com.example.playlistmaker.search.domain.extension.toDomainModel
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.search.util.Resource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRepository {
-    override fun searchTracks(expression: String): Resource<List<Track>> {
+    override fun searchTracks(expression: String): Flow<Resource<List<Track>>> = flow {
         val response = networkClient.doRequest(SearchTracksRequest(expression))
 
-        return when (response.resultCode) {
+        when (response.resultCode) {
             200 -> {
-                Resource.Success((response as SearchTracksResponse).results.map {
+                emit(Resource.Success((response as SearchTracksResponse).results.map {
                     it.toDomainModel()
-                })
+                }))
             }
 
             else -> {
-                Resource.Error(COMMUNICATION_PROBLEMS)
+                emit(Resource.Error(COMMUNICATION_PROBLEMS))
             }
         }
     }

@@ -4,12 +4,14 @@ package com.example.playlistmaker.history.data
 import com.example.playlistmaker.history.data.dto.TrackDtoSharedPreferences
 import com.example.playlistmaker.history.data.extension.toDomainModel
 import com.example.playlistmaker.history.domain.api.SearchHistoryRepository
+import com.example.playlistmaker.main.data.db.AppDatabase
 import com.example.playlistmaker.search.domain.extension.toTrackDtoSharedPreferencesModel
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.search.util.Resource
 
 class SearchHistoryRepositoryImpl(
     private val storage: StorageClient<ArrayList<TrackDtoSharedPreferences>>,
+    private val appDatabase: AppDatabase,
 ) : SearchHistoryRepository {
 
     override fun saveToHistory(track: Track) {
@@ -25,10 +27,10 @@ class SearchHistoryRepositoryImpl(
         storage.storeData(SEARCH_HISTORY_KEY, history as ArrayList<TrackDtoSharedPreferences>)
     }
 
-    override fun getHistory(): Resource<List<Track>> {
+    override suspend fun getHistory(): Resource<List<Track>> {
         val tracks = storage.getData(SEARCH_HISTORY_KEY) ?: listOf()
         val tracksDomain = tracks.map {
-            it.toDomainModel()
+            it.toDomainModel().copy(isFavorite = getStatusFavoriteTrack(it.toDomainModel()))
         }
         return Resource.Success(tracksDomain)
     }
@@ -37,9 +39,9 @@ class SearchHistoryRepositoryImpl(
         storage.clearData(SEARCH_HISTORY_KEY)
     }
 
-    override fun getLastTrack(): Track? {
-        val tracks = getHistory().data
-        return tracks?.first()
+    private suspend fun getStatusFavoriteTrack(track: Track): Boolean {
+        val favoriteTrackIds = appDatabase.trackDao().getTrackIds()
+        return favoriteTrackIds.contains(track.trackId)
     }
 
     companion object {

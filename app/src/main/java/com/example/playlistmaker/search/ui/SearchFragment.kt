@@ -32,13 +32,15 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
     private val tracksAdapter = SearchTracksAdapter { track ->
         if (clickDebounce()) {
-            findNavController().navigate(R.id.action_searchFragment_to_audioPlayerFragment)
+            val action = SearchFragmentDirections.actionSearchFragmentToAudioPlayerFragment(track)
+            findNavController().navigate(action)
             viewModel.onClickTrack(track)
         }
     }
     private val historyTracksAdapter = SearchTracksAdapter { track ->
         if (clickDebounce()) {
-            findNavController().navigate(R.id.action_searchFragment_to_audioPlayerFragment)
+            val action = SearchFragmentDirections.actionSearchFragmentToAudioPlayerFragment(track)
+            findNavController().navigate(action)
             viewModel.onClickTrackHistory(track)
         }
     }
@@ -77,7 +79,10 @@ class SearchFragment : Fragment() {
         binding.buttonClearSearch.setOnClickListener {
             viewModel.removeLatestSearchText()
             binding.inputTextSearch.setText("")
-            inputMethodManager?.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, 0)
+            inputMethodManager?.hideSoftInputFromWindow(
+                requireActivity().currentFocus?.windowToken,
+                0
+            )
             tracksAdapter.tracks.clear()
             tracksAdapter.notifyDataSetChanged()
             binding.messagePlaceholder.isVisible = false
@@ -193,6 +198,6 @@ class SearchFragment : Fragment() {
     }
 
     companion object {
-        private const val CLICK_TRACK_DEBOUNCE_DELAY = 1000L
+        const val CLICK_TRACK_DEBOUNCE_DELAY = 1000L
     }
 }

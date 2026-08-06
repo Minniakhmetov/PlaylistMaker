@@ -40,7 +40,7 @@ class SearchViewModel(
         }
     }
 
-    private fun processResult(foundTracks: List<Track>?, errorMessage: String?){
+    private fun processResult(foundTracks: List<Track>?, errorMessage: String?) {
         val tracks = mutableListOf<Track>()
         if (foundTracks != null) {
             tracks.addAll(foundTracks)
@@ -90,23 +90,25 @@ class SearchViewModel(
     }
 
     fun loadHistory() {
-        historyInteractor.getHistory(object : SearchHistoryInteractor.HistoryConsumer {
-            override fun consume(searchHistory: List<Track>?) {
-                val tracks = mutableListOf<Track>()
-                if (searchHistory?.isNotEmpty() ?: false) {
-                    tracks.addAll(searchHistory)
-                    renderState(
-                        SearchState.ContentHistory(
-                            tracks = tracks
+        viewModelScope.launch {
+            historyInteractor.getHistory(object : SearchHistoryInteractor.HistoryConsumer {
+                override fun consume(searchHistory: List<Track>?) {
+                    val tracks = mutableListOf<Track>()
+                    if (searchHistory?.isNotEmpty() ?: false) {
+                        tracks.addAll(searchHistory)
+                        renderState(
+                            SearchState.ContentHistory(
+                                tracks = tracks
+                            )
                         )
-                    )
-                } else {
-                    renderState(
-                        SearchState.Start
-                    )
+                    } else {
+                        renderState(
+                            SearchState.Start
+                        )
+                    }
                 }
-            }
-        })
+            })
+        }
     }
 
     fun onClickTrack(track: Track) {

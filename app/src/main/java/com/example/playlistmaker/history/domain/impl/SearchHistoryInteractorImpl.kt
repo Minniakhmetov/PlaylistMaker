@@ -7,7 +7,7 @@ import com.example.playlistmaker.search.domain.models.Track
 class SearchHistoryInteractorImpl(
     private val repository: SearchHistoryRepository,
 ) : SearchHistoryInteractor {
-    override fun getHistory(consumer: SearchHistoryInteractor.HistoryConsumer) {
+    override suspend fun getHistory(consumer: SearchHistoryInteractor.HistoryConsumer) {
         consumer.consume(repository.getHistory().data)
     }
 
@@ -19,7 +19,4 @@ class SearchHistoryInteractorImpl(
         repository.clearHistory()
     }
 
-    override fun getLastTrack(): Track? {
-        return repository.getLastTrack()
-    }
 }

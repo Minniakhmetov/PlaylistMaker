@@ -1,6 +1,7 @@
 package com.example.playlistmaker.main.ui
 
 import android.app.Application
+import com.example.playlistmaker.favoriteTracks.di.favoriteTracksRepositoryModule
 import com.example.playlistmaker.favoriteTracks.di.favoriteTracksViewModelModule
 import com.example.playlistmaker.history.di.historyDataModule
 import com.example.playlistmaker.history.di.historyInteractorModule
@@ -52,7 +53,10 @@ class App : Application() {
                 playerViewModelModule,
 
                 medicalLibraryViewModelModule,
+
                 favoriteTracksViewModelModule,
+                favoriteTracksRepositoryModule,
+
                 playlistsViewModelModule,
             )
         }

@@ -1,6 +1,5 @@
 package com.example.playlistmaker.favoriteTracks.domain.impl
 
-import android.util.Log
 import com.example.playlistmaker.favoriteTracks.domain.db.FavoriteTracksInteractor
 import com.example.playlistmaker.favoriteTracks.domain.db.FavoriteTracksRepository
 import com.example.playlistmaker.search.domain.models.Track
@@ -16,11 +15,6 @@ class FavoriteTracksInteractorImpl(
 
     override suspend fun deleteFavoriteTrack(track: Track) {
         favoriteTracksRepository.deleteFavoriteTrack(track)
-    }
-
-    override fun getFavoriteTracks(): Flow<List<Track>> {
-        Log.d("MyLog", "FavoriteTracksInteractorImpl - getFavoriteTracks:")
-        return favoriteTracksRepository.getFavoriteTracks()
     }
 
     override fun getFavoriteTracksFlow(): Flow<List<Track>> {

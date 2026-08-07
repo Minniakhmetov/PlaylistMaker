@@ -122,12 +122,16 @@ class AudioPlayerViewModel(
     }
 
     private fun initTrack(track: Track?) {
-
-        trackIsFavoriteLiveData.value = track?.isFavorite
         track?.let {
+            viewModelScope.launch {
+                favoriteTracksInteractor.getFavoriteTracksFlow().collect { favoriteTracks ->
+                    trackIsFavoriteLiveData.value = favoriteTracks.any{it.trackId == track.trackId }
+                }
+            }
+
             renderState(
                 AudioPlayerState.ShowTrack(
-                    track = it
+                    track = track
                 )
             )
             preparePlayer(track)

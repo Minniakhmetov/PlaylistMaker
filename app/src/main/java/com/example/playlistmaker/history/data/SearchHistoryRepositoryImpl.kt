@@ -4,14 +4,12 @@ package com.example.playlistmaker.history.data
 import com.example.playlistmaker.history.data.dto.TrackDtoSharedPreferences
 import com.example.playlistmaker.history.data.extension.toDomainModel
 import com.example.playlistmaker.history.domain.api.SearchHistoryRepository
-import com.example.playlistmaker.main.data.db.AppDatabase
 import com.example.playlistmaker.search.domain.extension.toTrackDtoSharedPreferencesModel
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.search.util.Resource
 
 class SearchHistoryRepositoryImpl(
     private val storage: StorageClient<ArrayList<TrackDtoSharedPreferences>>,
-    private val appDatabase: AppDatabase,
 ) : SearchHistoryRepository {
 
     override fun saveToHistory(track: Track) {
@@ -30,7 +28,7 @@ class SearchHistoryRepositoryImpl(
     override suspend fun getHistory(): Resource<List<Track>> {
         val tracks = storage.getData(SEARCH_HISTORY_KEY) ?: listOf()
         val tracksDomain = tracks.map {
-            it.toDomainModel().copy(isFavorite = getStatusFavoriteTrack(it.toDomainModel()))
+            it.toDomainModel()
         }
         return Resource.Success(tracksDomain)
     }
@@ -39,10 +37,6 @@ class SearchHistoryRepositoryImpl(
         storage.clearData(SEARCH_HISTORY_KEY)
     }
 
-    private suspend fun getStatusFavoriteTrack(track: Track): Boolean {
-        val favoriteTrackIds = appDatabase.trackDao().getTrackIds()
-        return favoriteTrackIds.contains(track.trackId)
-    }
 
     companion object {
         const val HISTORY_MAX_SIZE = 10

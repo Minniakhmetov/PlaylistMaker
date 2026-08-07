@@ -25,15 +25,14 @@ class SearchViewModel(
     fun observeState(): LiveData<SearchState> = stateLiveData
 
     fun searchDebounce(changedText: String) {
+        searchJob?.cancel()
         if (changedText.isEmpty()) {
             if (latestSearchText == null) {
                 loadHistory()
                 return
             }
         }
-
         latestSearchText = changedText
-        searchJob?.cancel()
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_DELAY)
             searchRequest(changedText)

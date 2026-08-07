@@ -9,8 +9,6 @@ interface FavoriteTracksInteractor {
 
     suspend fun deleteFavoriteTrack(track: Track)
 
-    fun getFavoriteTracks(): Flow<List<Track>>
-
     fun getFavoriteTracksFlow(): Flow<List<Track>>
 
 }

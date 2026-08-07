@@ -1,7 +1,7 @@
 package com.example.playlistmaker.history.data.dto
 
 data class TrackDtoSharedPreferences(
-    val trackId: Int,
+    val trackId: Long,
     val trackName: String,
     val artistName: String,
     val trackTimeMillis: String,

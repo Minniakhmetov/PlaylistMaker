@@ -25,7 +25,7 @@ class SearchHistoryRepositoryImpl(
         storage.storeData(SEARCH_HISTORY_KEY, history as ArrayList<TrackDtoSharedPreferences>)
     }
 
-    override fun getHistory(): Resource<List<Track>> {
+    override suspend fun getHistory(): Resource<List<Track>> {
         val tracks = storage.getData(SEARCH_HISTORY_KEY) ?: listOf()
         val tracksDomain = tracks.map {
             it.toDomainModel()
@@ -37,10 +37,6 @@ class SearchHistoryRepositoryImpl(
         storage.clearData(SEARCH_HISTORY_KEY)
     }
 
-    override fun getLastTrack(): Track? {
-        val tracks = getHistory().data
-        return tracks?.first()
-    }
 
     companion object {
         const val HISTORY_MAX_SIZE = 10

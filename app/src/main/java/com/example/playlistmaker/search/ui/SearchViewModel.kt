@@ -25,22 +25,21 @@ class SearchViewModel(
     fun observeState(): LiveData<SearchState> = stateLiveData
 
     fun searchDebounce(changedText: String) {
+        searchJob?.cancel()
         if (changedText.isEmpty()) {
             if (latestSearchText == null) {
                 loadHistory()
                 return
             }
         }
-
         latestSearchText = changedText
-        searchJob?.cancel()
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_DELAY)
             searchRequest(changedText)
         }
     }
 
-    private fun processResult(foundTracks: List<Track>?, errorMessage: String?){
+    private fun processResult(foundTracks: List<Track>?, errorMessage: String?) {
         val tracks = mutableListOf<Track>()
         if (foundTracks != null) {
             tracks.addAll(foundTracks)
@@ -90,23 +89,25 @@ class SearchViewModel(
     }
 
     fun loadHistory() {
-        historyInteractor.getHistory(object : SearchHistoryInteractor.HistoryConsumer {
-            override fun consume(searchHistory: List<Track>?) {
-                val tracks = mutableListOf<Track>()
-                if (searchHistory?.isNotEmpty() ?: false) {
-                    tracks.addAll(searchHistory)
-                    renderState(
-                        SearchState.ContentHistory(
-                            tracks = tracks
+        viewModelScope.launch {
+            historyInteractor.getHistory(object : SearchHistoryInteractor.HistoryConsumer {
+                override fun consume(searchHistory: List<Track>?) {
+                    val tracks = mutableListOf<Track>()
+                    if (searchHistory?.isNotEmpty() ?: false) {
+                        tracks.addAll(searchHistory)
+                        renderState(
+                            SearchState.ContentHistory(
+                                tracks = tracks
+                            )
                         )
-                    )
-                } else {
-                    renderState(
-                        SearchState.Start
-                    )
+                    } else {
+                        renderState(
+                            SearchState.Start
+                        )
+                    }
                 }
-            }
-        })
+            })
+        }
     }
 
     fun onClickTrack(track: Track) {

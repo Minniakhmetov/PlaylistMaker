@@ -61,10 +61,18 @@ class AudioPlayerFragment : Fragment() {
             changeButtonImg(it == PlayerState.PLAYING)
         }
 
+        viewModel.observeTrackIsFavorite().observe(viewLifecycleOwner) {
+            changeTrackIsFavoriteButtonImg(it)
+        }
+
         binding.tvAudioPlayerTrackTime.text = getString(R.string.track_start_time)
 
         binding.imgAudioPlayerTrackPlay.setOnClickListener {
             viewModel.onPlayButtonClicked()
+        }
+
+        binding.imgAudioPlayerTrackLike.setOnClickListener {
+            viewModel.onFavoriteClicked()
         }
     }
 
@@ -83,6 +91,14 @@ class AudioPlayerFragment : Fragment() {
             binding.imgAudioPlayerTrackPlay.setImageResource(R.drawable.ic_track_pause_100)
         } else {
             binding.imgAudioPlayerTrackPlay.setImageResource(R.drawable.ic_track_play_100)
+        }
+    }
+
+    private fun changeTrackIsFavoriteButtonImg(trackIsFavorite: Boolean) {
+        if (trackIsFavorite) {
+            binding.imgAudioPlayerTrackLike.setImageResource(R.drawable.ic_track_like_true_51)
+        } else {
+            binding.imgAudioPlayerTrackLike.setImageResource(R.drawable.ic_track_like_51)
         }
     }
 

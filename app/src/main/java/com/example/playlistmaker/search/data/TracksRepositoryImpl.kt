@@ -10,8 +10,10 @@ import com.example.playlistmaker.search.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRepository {
-    override fun searchTracks(expression: String): Flow<Resource<List<Track>>> = flow {
+class TracksRepositoryImpl(
+    private val networkClient: NetworkClient,
+) : TracksRepository {
+    override suspend fun searchTracks(expression: String): Flow<Resource<List<Track>>> = flow {
         val response = networkClient.doRequest(SearchTracksRequest(expression))
 
         when (response.resultCode) {
@@ -26,6 +28,7 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRep
             }
         }
     }
+
 
     companion object {
         const val COMMUNICATION_PROBLEMS = "Проблемы со связью"

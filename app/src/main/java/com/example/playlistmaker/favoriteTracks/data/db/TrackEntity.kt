@@ -1,6 +1,11 @@
-package com.example.playlistmaker.history.data.dto
+package com.example.playlistmaker.favoriteTracks.data.db
 
-data class TrackDtoSharedPreferences(
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "favorite_tracks")
+data class TrackEntity (
+    @PrimaryKey
     val trackId: Long,
     val trackName: String,
     val artistName: String,
@@ -11,4 +16,5 @@ data class TrackDtoSharedPreferences(
     val primaryGenreName: String,
     val country: String,
     val previewUrl: String,
+    val created: Long = System.currentTimeMillis()
 )

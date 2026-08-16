@@ -7,7 +7,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.favoriteTracks.domain.db.FavoriteTracksInteractor
+import com.example.playlistmaker.main.ui.utils.SingleLiveEvent
+import com.example.playlistmaker.playlistCreate.domain.models.Playlist
+import com.example.playlistmaker.playlists.domain.db.PlaylistsInteractor
 import com.example.playlistmaker.search.domain.models.Track
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -16,13 +21,20 @@ import java.util.Locale
 
 class AudioPlayerViewModel(
     private val favoriteTracksInteractor: FavoriteTracksInteractor,
-    private val savedStateHandle: SavedStateHandle
+    private val playlistsInteractor: PlaylistsInteractor,
+    private val savedStateHandle: SavedStateHandle,
+    private val gson: Gson,
+    private val messageTrackAlreadyAddedPlaylist: String,
+    private val messageTrackAddedPlaylist: String,
 ) : ViewModel() {
     private val playerStateLiveData = MutableLiveData(PlayerState.DEFAULT)
     fun observePlayerState(): LiveData<PlayerState> = playerStateLiveData
 
     private val progressTimeLiveData = MutableLiveData(TRACK_TIME_START_VALUE)
     fun observeProgressTime(): LiveData<String> = progressTimeLiveData
+
+    private val isShowBottomSheet = MutableLiveData(false)
+    fun observeShowBottomSheet(): LiveData<Boolean> = isShowBottomSheet
 
     private val mediaPlayer = MediaPlayer()
 
@@ -31,15 +43,14 @@ class AudioPlayerViewModel(
     fun observeState(): LiveData<AudioPlayerState> = stateLiveData
     private val trackIsFavoriteLiveData = MutableLiveData(false)
     fun observeTrackIsFavorite(): LiveData<Boolean> = trackIsFavoriteLiveData
+    private val playlistsCurrent = MutableLiveData<List<Playlist>>()
+    fun observePlaylistsCurrent(): LiveData<List<Playlist>> = playlistsCurrent
+    private val showMessageLiveData = SingleLiveEvent<String>()
+    fun observeShowMessage(): LiveData<String> = showMessageLiveData
 
     private val track: Track? = savedStateHandle[SAVED_STATE_HANDLE_TRACK]
 
     private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
-
-    init {
-        initTrack(track)
-    }
-
 
     override fun onCleared() {
         super.onCleared()
@@ -69,6 +80,36 @@ class AudioPlayerViewModel(
                 track?.let { favoriteTracksInteractor.saveFavoriteTrack(it) }
                 trackIsFavoriteLiveData.value = true
             }
+        }
+    }
+
+    fun onClickPlaylist(playlist: Playlist){
+        track?.let {
+            if(playlistContainsTrack(it, playlist)){
+                showMessageLiveData.postValue("$messageTrackAlreadyAddedPlaylist ${playlist.name}")
+            }else{
+                viewModelScope.launch {
+                    val result = playlistsInteractor.updatePlaylist(track, playlist)
+                    if (result){
+                        renderState(AudioPlayerState.ShowTrack(track))
+                        showMessageLiveData.postValue("$messageTrackAddedPlaylist ${playlist.name}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun onClickCreateNewPlaylist(){
+        isShowBottomSheet.postValue(false)
+    }
+
+    fun playlistContainsTrack(track: Track, playlist: Playlist): Boolean{
+        if (playlist.trackIds == null){
+            return false
+        }else{
+            val type = object : TypeToken<List<Long>>() {}.type
+            val trackIds: List<Long> = gson.fromJson(playlist.trackIds, type)
+            return trackIds.contains(track.trackId)
         }
     }
 
@@ -121,7 +162,7 @@ class AudioPlayerViewModel(
         pausePlayer()
     }
 
-    private fun initTrack(track: Track?) {
+    fun initTrack() {
         track?.let {
             viewModelScope.launch {
                 favoriteTracksInteractor.getFavoriteTracksFlow().collect { favoriteTracks ->
@@ -136,6 +177,15 @@ class AudioPlayerViewModel(
             )
             preparePlayer(track)
         }
+    }
+
+    fun trackAddPlaylistClicked(){
+        viewModelScope.launch {
+            playlistsInteractor.getPlaylists().collect { playlists ->
+                playlistsCurrent.value = playlists
+            }
+        }
+        isShowBottomSheet.postValue(true)
     }
 
     private fun renderState(state: AudioPlayerState) {

@@ -1,30 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/audio_player_activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorPrimary"
     tools:context=".player.ui.AudioPlayerFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/leftBorder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_begin="24dp" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/rightBorder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_end="24dp" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar_audio_player"
@@ -36,176 +23,253 @@
             app:titleTextAppearance="@style/MainTitleStyle"
             tools:ignore="MissingConstraints" />
 
-        <ImageView
-            android:id="@+id/audio_player_track_img"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_track_placeholder_312"
-            app:layout_constraintTop_toBottomOf="@id/toolbar_audio_player"
-            app:layout_constraintStart_toStartOf="@id/leftBorder"
-            app:layout_constraintEnd_toEndOf="@id/rightBorder"
-            android:layout_marginTop="26dp" />
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_audio_player_track_name"
-            tools:text="@string/tools_search_track_name"
-            style="@style/SearchPlaceholderText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="26dp"
-            android:gravity="start"
-            android:layout_marginStart="0dp"
-            android:textSize="22sp"
-            app:layout_constraintTop_toBottomOf="@id/audio_player_track_img"
-            app:layout_constraintStart_toStartOf="@id/leftBorder"
-            app:layout_constraintEnd_toEndOf="@id/rightBorder" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_audio_player_track_artist"
-            tools:text="@string/tools_search_track_artist"
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/leftBorder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_begin="24dp" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/rightBorder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_end="24dp" />
+
+
+                <ImageView
+                    android:id="@+id/audio_player_track_img"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_track_placeholder_312"
+                    app:layout_constraintEnd_toEndOf="@id/rightBorder"
+                    app:layout_constraintStart_toStartOf="@id/leftBorder"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_audio_player_track_name"
+                    style="@style/SearchPlaceholderText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="26dp"
+                    android:gravity="start"
+                    android:textSize="22sp"
+                    app:layout_constraintEnd_toEndOf="@id/rightBorder"
+                    app:layout_constraintStart_toStartOf="@id/leftBorder"
+                    app:layout_constraintTop_toBottomOf="@id/audio_player_track_img"
+                    tools:text="@string/tools_search_track_name" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_audio_player_track_artist"
+                    style="@style/SearchPlaceholderText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="12dp"
+                    android:gravity="start"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="@id/rightBorder"
+                    app:layout_constraintStart_toStartOf="@id/leftBorder"
+                    app:layout_constraintTop_toBottomOf="@id/tv_audio_player_track_name"
+                    tools:text="@string/tools_search_track_artist" />
+
+                <ImageView
+                    android:id="@+id/img_audio_player_track_play"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:src="@drawable/ic_track_play_100"
+                    app:layout_constraintEnd_toEndOf="@id/rightBorder"
+                    app:layout_constraintStart_toStartOf="@id/leftBorder"
+                    app:layout_constraintTop_toBottomOf="@id/tv_audio_player_track_artist" />
+
+                <ImageView
+                    android:id="@+id/img_audio_player_track_add_playlist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_add_playlist_51"
+                    app:layout_constraintBottom_toBottomOf="@id/img_audio_player_track_play"
+                    app:layout_constraintStart_toStartOf="@id/leftBorder"
+                    app:layout_constraintTop_toTopOf="@id/img_audio_player_track_play" />
+
+                <ImageView
+                    android:id="@+id/img_audio_player_track_like"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_track_like_51"
+                    app:layout_constraintBottom_toBottomOf="@id/img_audio_player_track_play"
+                    app:layout_constraintEnd_toStartOf="@id/rightBorder"
+                    app:layout_constraintTop_toTopOf="@id/img_audio_player_track_play" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_audio_player_track_time"
+                    style="@style/SearchPlaceholderText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center"
+                    android:textFontWeight="500"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="@+id/img_audio_player_track_play"
+                    app:layout_constraintStart_toStartOf="@+id/img_audio_player_track_play"
+                    app:layout_constraintTop_toBottomOf="@id/img_audio_player_track_play"
+                    tools:text="@string/tools_search_track_time" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/border_description_left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_begin="16dp" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/border_description_right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_end="16dp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_audio_player_text_duration"
+                    style="@style/AudiPlayerText"
+                    android:layout_marginTop="30dp"
+                    android:text="@string/track_time"
+                    app:layout_constraintStart_toStartOf="@id/border_description_left"
+                    app:layout_constraintTop_toBottomOf="@id/tv_audio_player_track_time" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_audio_player_value_duration"
+                    style="@style/AudiPlayerTextDescription"
+                    app:layout_constraintBaseline_toBaselineOf="@id/tv_audio_player_text_duration"
+                    app:layout_constraintEnd_toEndOf="@id/border_description_right"
+                    app:layout_constraintStart_toEndOf="@id/tv_audio_player_text_duration"
+                    tools:text="@string/tools_search_track_time" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_audio_player_text_album"
+                    style="@style/AudiPlayerText"
+                    android:text="@string/track_collection_name"
+                    app:layout_constraintStart_toStartOf="@id/border_description_left"
+                    app:layout_constraintTop_toBottomOf="@id/tv_audio_player_text_duration" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_audio_player_value_album"
+                    style="@style/AudiPlayerTextDescription"
+                    android:layout_width="0dp"
+                    app:layout_constraintBaseline_toBaselineOf="@id/tv_audio_player_text_album"
+                    app:layout_constraintEnd_toEndOf="@id/border_description_right"
+                    app:layout_constraintStart_toEndOf="@id/tv_audio_player_text_album"
+                    tools:text="@string/tools_search_track_name" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_audio_player_text_release_date"
+                    style="@style/AudiPlayerText"
+                    android:text="@string/track_release_date"
+                    app:layout_constraintStart_toStartOf="@id/border_description_left"
+                    app:layout_constraintTop_toBottomOf="@id/tv_audio_player_text_album" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_audio_player_value_release_date"
+                    style="@style/AudiPlayerTextDescription"
+                    app:layout_constraintBaseline_toBaselineOf="@id/tv_audio_player_text_release_date"
+                    app:layout_constraintEnd_toEndOf="@id/border_description_right"
+                    app:layout_constraintStart_toEndOf="@id/tv_audio_player_text_release_date"
+                    tools:text="@string/tools_track_release_date" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_audio_player_text_genre"
+                    style="@style/AudiPlayerText"
+                    android:text="@string/track_primary_genre_name"
+                    app:layout_constraintStart_toStartOf="@id/border_description_left"
+                    app:layout_constraintTop_toBottomOf="@id/tv_audio_player_text_release_date" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_audio_player_value_genre"
+                    style="@style/AudiPlayerTextDescription"
+                    app:layout_constraintBaseline_toBaselineOf="@id/tv_audio_player_text_genre"
+                    app:layout_constraintEnd_toEndOf="@id/border_description_right"
+                    app:layout_constraintStart_toEndOf="@id/tv_audio_player_text_genre"
+                    tools:text="@string/tools_track_primary_genre_name" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_audio_player_text_country"
+                    style="@style/AudiPlayerText"
+                    android:text="@string/track_country"
+                    app:layout_constraintStart_toStartOf="@id/border_description_left"
+                    app:layout_constraintTop_toBottomOf="@id/tv_audio_player_text_genre" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_audio_player_value_country"
+                    style="@style/AudiPlayerTextDescription"
+                    app:layout_constraintBaseline_toBaselineOf="@id/tv_audio_player_text_country"
+                    app:layout_constraintEnd_toEndOf="@id/border_description_right"
+                    app:layout_constraintStart_toEndOf="@id/tv_audio_player_text_country"
+                    tools:text="@string/tools_track_country" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+
+
+    <View
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/playlists_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="505dp"
+        android:background="@drawable/bg_bottom_sheet"
+        android:orientation="vertical"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="505dp"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <View
+            android:layout_width="50dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_bottom_sheet_handle" />
+
+        <TextView
             style="@style/SearchPlaceholderText"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:gravity="start"
-            android:layout_marginStart="0dp"
-            android:textSize="14sp"
-            app:layout_constraintTop_toBottomOf="@id/tv_audio_player_track_name"
-            app:layout_constraintStart_toStartOf="@id/leftBorder"
-            app:layout_constraintEnd_toEndOf="@id/rightBorder" />
+            android:paddingTop="18dp"
+            android:paddingBottom="12dp"
+            android:text="@string/add_to_playlist" />
 
-        <ImageView
-            android:id="@+id/img_audio_player_track_play"
+        <Button
+            android:id="@+id/btnNewPlaylist"
+            style="@style/ButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_track_play_100"
-            android:layout_marginTop="30dp"
-            app:layout_constraintTop_toBottomOf="@id/tv_audio_player_track_artist"
-            app:layout_constraintStart_toStartOf="@id/leftBorder"
-            app:layout_constraintEnd_toEndOf="@id/rightBorder" />
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:text="@string/new_playlist" />
 
-        <ImageView
-            android:id="@+id/img_audio_player_track_add_playlist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_add_playlist_51"
-            app:layout_constraintTop_toTopOf="@id/img_audio_player_track_play"
-            app:layout_constraintBottom_toBottomOf="@id/img_audio_player_track_play"
-            app:layout_constraintStart_toStartOf="@id/leftBorder" />
 
-        <ImageView
-            android:id="@+id/img_audio_player_track_like"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_track_like_51"
-            app:layout_constraintTop_toTopOf="@id/img_audio_player_track_play"
-            app:layout_constraintBottom_toBottomOf="@id/img_audio_player_track_play"
-            app:layout_constraintEnd_toStartOf="@id/rightBorder" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvPlayerPlaylists"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_audio_player_track_time"
-            tools:text="@string/tools_search_track_time"
-            style="@style/SearchPlaceholderText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:gravity="center"
-            android:textSize="14sp"
-            android:textFontWeight="500"
-            app:layout_constraintEnd_toEndOf="@+id/img_audio_player_track_play"
-            app:layout_constraintStart_toStartOf="@+id/img_audio_player_track_play"
-            app:layout_constraintTop_toBottomOf="@id/img_audio_player_track_play" />
+    </LinearLayout>
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/border_description_left"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_begin="16dp" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/border_description_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_end="16dp" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_audio_player_text_duration"
-            android:text="@string/track_time"
-            style="@style/AudiPlayerText"
-
-            android:layout_marginTop="30dp"
-            app:layout_constraintTop_toBottomOf="@id/tv_audio_player_track_time"
-            app:layout_constraintStart_toStartOf="@id/border_description_left" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_audio_player_value_duration"
-            tools:text="@string/tools_search_track_time"
-            style="@style/AudiPlayerTextDescription"
-            app:layout_constraintBaseline_toBaselineOf="@id/tv_audio_player_text_duration"
-            app:layout_constraintEnd_toEndOf="@id/border_description_right"
-            app:layout_constraintStart_toEndOf="@id/tv_audio_player_text_duration" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_audio_player_text_album"
-            android:text="@string/track_collection_name"
-            style="@style/AudiPlayerText"
-            app:layout_constraintTop_toBottomOf="@id/tv_audio_player_text_duration"
-            app:layout_constraintStart_toStartOf="@id/border_description_left" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_audio_player_value_album"
-            tools:text="@string/tools_search_track_name"
-            android:layout_width="0dp"
-            style="@style/AudiPlayerTextDescription"
-            app:layout_constraintBaseline_toBaselineOf="@id/tv_audio_player_text_album"
-            app:layout_constraintEnd_toEndOf="@id/border_description_right"
-            app:layout_constraintStart_toEndOf="@id/tv_audio_player_text_album" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_audio_player_text_release_date"
-            android:text="@string/track_release_date"
-            style="@style/AudiPlayerText"
-            app:layout_constraintTop_toBottomOf="@id/tv_audio_player_text_album"
-            app:layout_constraintStart_toStartOf="@id/border_description_left" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_audio_player_value_release_date"
-            tools:text="@string/tools_track_release_date"
-            style="@style/AudiPlayerTextDescription"
-            app:layout_constraintBaseline_toBaselineOf="@id/tv_audio_player_text_release_date"
-            app:layout_constraintEnd_toEndOf="@id/border_description_right"
-            app:layout_constraintStart_toEndOf="@id/tv_audio_player_text_release_date" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_audio_player_text_genre"
-            android:text="@string/track_primary_genre_name"
-            style="@style/AudiPlayerText"
-            app:layout_constraintTop_toBottomOf="@id/tv_audio_player_text_release_date"
-            app:layout_constraintStart_toStartOf="@id/border_description_left" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_audio_player_value_genre"
-            tools:text="@string/tools_track_primary_genre_name"
-            style="@style/AudiPlayerTextDescription"
-            app:layout_constraintBaseline_toBaselineOf="@id/tv_audio_player_text_genre"
-            app:layout_constraintEnd_toEndOf="@id/border_description_right"
-            app:layout_constraintStart_toEndOf="@id/tv_audio_player_text_genre" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_audio_player_text_country"
-            android:text="@string/track_country"
-            style="@style/AudiPlayerText"
-            app:layout_constraintTop_toBottomOf="@id/tv_audio_player_text_genre"
-            app:layout_constraintStart_toStartOf="@id/border_description_left" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_audio_player_value_country"
-            tools:text="@string/tools_track_country"
-            style="@style/AudiPlayerTextDescription"
-            app:layout_constraintBaseline_toBaselineOf="@id/tv_audio_player_text_country"
-            app:layout_constraintEnd_toEndOf="@id/border_description_right"
-            app:layout_constraintStart_toEndOf="@id/tv_audio_player_text_country" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

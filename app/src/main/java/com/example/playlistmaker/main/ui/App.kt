@@ -9,6 +9,9 @@ import com.example.playlistmaker.history.di.historyRepositoryModule
 import com.example.playlistmaker.library.di.medicalLibraryViewModelModule
 import com.example.playlistmaker.main.di.rootActivityViewModelModule
 import com.example.playlistmaker.player.di.playerViewModelModule
+import com.example.playlistmaker.playlistCreate.di.playlistCreateViewModelModule
+import com.example.playlistmaker.playlists.di.playlistsInteractorModule
+import com.example.playlistmaker.playlists.di.playlistsRepositoryModule
 import com.example.playlistmaker.playlists.di.playlistsViewModelModule
 import com.example.playlistmaker.search.di.searchDataModule
 import com.example.playlistmaker.search.di.searchInteractorModule
@@ -58,6 +61,11 @@ class App : Application() {
                 favoriteTracksRepositoryModule,
 
                 playlistsViewModelModule,
+
+                playlistCreateViewModelModule,
+                playlistsRepositoryModule,
+                playlistsInteractorModule,
+
             )
         }
     }

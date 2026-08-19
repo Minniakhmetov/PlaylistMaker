@@ -4,6 +4,7 @@
     <string name="search">Поиск</string>
     <string name="medical_library">Медиатека</string>
     <string name="settings">Настройки</string>
+    <string name="new_playlist">Новый плейлист</string>
 
     <string name="clear">Очистить</string>
     <string name="update">Обновить</string>
@@ -34,13 +35,30 @@
     <string name="track_primary_genre_name">Жанр</string>
     <string name="track_country">Страна</string>
     <string name="track_start_time">00:00</string>
+    <string name="add_to_playlist">Добавить в плейлист</string>
 
-    <string name="new_playlist">Новый плейлист</string>
     <string name="no_playlists">Вы не создали ни одного плейлиста</string>
     <string name="library_is_empty">Ваша медиатека пуста</string>
     <string name="favorite_tracks">Избранные треки</string>
     <string name="playlists">Плейлисты</string>
 
+    <string name="new_playlist_name">Название*</string>
+    <string name="new_playlist_description">Описание</string>
+    <string name="new_playlist_image_content_description">Описание</string>
+    <string name="new_playlist_create">Создать</string>
+
+    <string name="text_finish_creating_playlist">Завершить создание плейлиста?</string>
+    <string name="text_all_unsaved_data_will_be_lost">Все несохраненные данные будут потеряны</string>
+    <string name="text_cancel">Отмена</string>
+    <string name="text_complete">Завершить</string>
+
+    <string name="text_tracks_null">Нет треков</string>
+    <string name="text_tracks_1">трек</string>
+    <string name="text_tracks_2_4">трека</string>
+    <string name="text_tracks_other">треков</string>
+
+    <string name="message_track_already_added_playlist">Трек уже добавлен в плейлист</string>
+    <string name="message_track_added_playlist">Добавлено в плейлист</string>
 
     <string name="tools_search_track_name">Yesterday (Remastered 2009)</string>
     <string name="tools_search_track_artist">The Beatles</string>

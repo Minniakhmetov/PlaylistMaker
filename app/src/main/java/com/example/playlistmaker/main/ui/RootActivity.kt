@@ -1,7 +1,6 @@
 package com.example.playlistmaker.main.ui
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -22,7 +21,7 @@ class RootActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
 
         binding = ActivityRootBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -41,14 +40,14 @@ class RootActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.audioPlayerFragment -> {
-                    binding.bottomNavigationView.isVisible = false
-                    binding.divider.isVisible = false
+                R.id.searchFragment, R.id.libraryFragment, R.id.settingsFragment -> {
+                    binding.bottomNavigationView.isVisible = true
+                    binding.divider.isVisible = true
                 }
 
                 else -> {
-                    binding.bottomNavigationView.isVisible = true
-                    binding.divider.isVisible = true
+                    binding.bottomNavigationView.isVisible = false
+                    binding.divider.isVisible = false
                 }
             }
         }

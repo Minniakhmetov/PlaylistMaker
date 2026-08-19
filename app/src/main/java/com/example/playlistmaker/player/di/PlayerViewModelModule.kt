@@ -5,7 +5,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val playerViewModelModule = module {
-    viewModel {
-        AudioPlayerViewModel(get(), get())
+    viewModel { (messageTrackAlreadyAddedPlaylist: String, messageTrackAddedPlaylist: String) ->
+        AudioPlayerViewModel(get(), get(),get(),get(), messageTrackAlreadyAddedPlaylist ,messageTrackAddedPlaylist)
     }
 }

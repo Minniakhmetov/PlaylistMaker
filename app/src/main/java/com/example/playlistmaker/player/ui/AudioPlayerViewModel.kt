@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.favoriteTracks.domain.db.FavoriteTracksInteractor
 import com.example.playlistmaker.main.ui.utils.SingleLiveEvent
-import com.example.playlistmaker.playlistCreate.domain.models.Playlist
+import com.example.playlistmaker.playlistEdit.domain.models.Playlist
 import com.example.playlistmaker.playlists.domain.db.PlaylistsInteractor
 import com.example.playlistmaker.search.domain.models.Track
 import com.google.gson.Gson
@@ -89,7 +89,7 @@ class AudioPlayerViewModel(
                 showMessageLiveData.postValue("$messageTrackAlreadyAddedPlaylist ${playlist.name}")
             }else{
                 viewModelScope.launch {
-                    val result = playlistsInteractor.updatePlaylist(track, playlist)
+                    val result = playlistsInteractor.addTrackInPlaylist(track, playlist)
                     if (result){
                         renderState(AudioPlayerState.ShowTrack(track))
                         showMessageLiveData.postValue("$messageTrackAddedPlaylist ${playlist.name}")

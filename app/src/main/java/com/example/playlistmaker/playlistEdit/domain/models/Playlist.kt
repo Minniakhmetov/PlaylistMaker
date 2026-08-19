@@ -1,4 +1,4 @@
-package com.example.playlistmaker.playlistCreate.domain.models
+package com.example.playlistmaker.playlistEdit.domain.models
 
 data class Playlist(
     val id: Long = 0,

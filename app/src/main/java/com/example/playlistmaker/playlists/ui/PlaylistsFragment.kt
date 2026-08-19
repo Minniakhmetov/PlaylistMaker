@@ -6,11 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
-import com.example.playlistmaker.playlistCreate.domain.models.Playlist
+import com.example.playlistmaker.library.ui.LibraryFragmentDirections
+import com.example.playlistmaker.playlistEdit.domain.models.Playlist
+import com.example.playlistmaker.search.ui.SearchFragment.Companion.CLICK_TRACK_DEBOUNCE_DELAY
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : Fragment() {
@@ -18,8 +23,13 @@ class PlaylistsFragment : Fragment() {
     private var _binding: FragmentPlaylistsBinding? = null
     private val binding get() = _binding!!
 
-
-    private val playlistsAdapter = PlaylistsAdapter()
+    private var isClickAllowed = true
+    private val playlistsAdapter = PlaylistsAdapter { playlist ->
+        if (clickDebounce()) {
+            val action = LibraryFragmentDirections.actionLibraryFragmentToPlaylistInfoFragment(playlist.id)
+            findNavController().navigate(action)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,6 +60,18 @@ class PlaylistsFragment : Fragment() {
         _binding = null
     }
 
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            lifecycleScope.launch {
+                delay(CLICK_TRACK_DEBOUNCE_DELAY)
+                isClickAllowed = true
+            }
+        }
+        return current
+    }
+
     fun render(state: PlaylistsState) {
         when (state) {
             is PlaylistsState.Empty -> showEmpty()
@@ -66,6 +88,8 @@ class PlaylistsFragment : Fragment() {
 
     fun showEmpty() {
         binding.messagePlaylists.isVisible = true
+        playlistsAdapter.playlists.clear()
+        playlistsAdapter.notifyDataSetChanged()
     }
 
     companion object {

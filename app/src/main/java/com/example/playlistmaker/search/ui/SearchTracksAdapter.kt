@@ -4,7 +4,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.search.domain.models.Track
 
-class SearchTracksAdapter(private val clickListener: SearchTrackClickListener) :
+class SearchTracksAdapter(private val clickListener: SearchTrackClickListener, private val longClickListener: TrackLongClickListener) :
     RecyclerView.Adapter<SearchTrackViewHolder>() {
     var tracks = mutableListOf<Track>()
     override fun onCreateViewHolder(
@@ -20,11 +20,18 @@ class SearchTracksAdapter(private val clickListener: SearchTrackClickListener) :
         holder.itemView.setOnClickListener {
             clickListener.onTrackClick(tracks[position])
         }
+        holder.itemView.setOnLongClickListener {
+            longClickListener.onTrackLongClick(tracks[position])
+        }
     }
 
     override fun getItemCount() = tracks.size
 
     fun interface SearchTrackClickListener {
         fun onTrackClick(track: Track)
+    }
+
+    fun interface TrackLongClickListener {
+        fun onTrackLongClick(track: Track): Boolean
     }
 }

@@ -1,8 +1,9 @@
-package com.example.playlistmaker.playlistCreate.ui
+package com.example.playlistmaker.playlistEdit.ui
 
-import com.example.playlistmaker.playlistCreate.domain.models.Playlist
+import com.example.playlistmaker.playlistEdit.domain.models.Playlist
 
 sealed interface PlaylistCreateState {
+    object Loading : PlaylistCreateState
     object Empty : PlaylistCreateState
     data class Content(
         val playlist: Playlist,

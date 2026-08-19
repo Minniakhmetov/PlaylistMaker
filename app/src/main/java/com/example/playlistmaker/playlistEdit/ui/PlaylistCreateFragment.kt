@@ -1,4 +1,4 @@
-package com.example.playlistmaker.playlistCreate.ui
+package com.example.playlistmaker.playlistEdit.ui
 
 import android.os.Bundle
 import android.view.Gravity
@@ -21,21 +21,21 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistCreateBinding
-import com.example.playlistmaker.playlistCreate.domain.models.Playlist
+import com.example.playlistmaker.playlistEdit.domain.models.Playlist
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 
-class PlaylistCreateFragment : Fragment() {
-    private val viewModel: PlaylistCreateViewModel by viewModel()
-    private var _binding: FragmentPlaylistCreateBinding? = null
-    private val binding get() = _binding!!
+open class PlaylistCreateFragment : Fragment() {
+    open val viewModel: PlaylistCreateViewModel by viewModel()
+    open var _binding: FragmentPlaylistCreateBinding? = null
+    open val binding get() = _binding!!
     private var isClickAllowed = true
 
     private var bottomPadding = 0
-    lateinit var confirmDialog: MaterialAlertDialogBuilder
+    open lateinit var confirmDialog: MaterialAlertDialogBuilder
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -89,7 +89,7 @@ class PlaylistCreateFragment : Fragment() {
 
         binding.btnCreatePlaylist.setOnClickListener {
             if (clickDebounce()) {
-                viewModel.createPlaylist()
+                viewModel.savePlaylist()
                 findNavController().navigateUp()
             }
         }
@@ -116,6 +116,8 @@ class PlaylistCreateFragment : Fragment() {
             }.setPositiveButton(getString(R.string.text_complete)) { _, _ ->
                 close()
             }
+
+        viewModel.init()
     }
 
 
@@ -136,15 +138,21 @@ class PlaylistCreateFragment : Fragment() {
         return current
     }
 
-    fun render(state: PlaylistCreateState) {
+    open fun render(state: PlaylistCreateState) {
         when (state) {
+            is PlaylistCreateState.Loading -> loading()
             is PlaylistCreateState.Content -> showContent(state.playlist)
             PlaylistCreateState.Empty -> showEmpty()
             is PlaylistCreateState.ShowDialog -> showDialog()
             PlaylistCreateState.Close -> close()
         }
     }
-    fun showContent(playlist: Playlist) {
+
+    open fun loading(){
+        binding.toolbarCreatePlaylist.setTitle("Новый плейлист")
+        binding.btnCreatePlaylist.text = "Создать"
+    }
+    open fun showContent(playlist: Playlist) {
         val file = File(playlist.pathImageCover)
         binding.imgCreatePlaylistAddPhoto.background = null
         Glide.with(binding.root)
@@ -153,7 +161,7 @@ class PlaylistCreateFragment : Fragment() {
             .into(binding.imgCreatePlaylistAddPhoto)
     }
 
-    fun showMessage(message: String) {
+    open fun showMessage(message: String) {
         val view = LayoutInflater.from(requireContext()).inflate(R.layout.toast_custom, null)
         val textView = view.findViewById<TextView>(R.id.toastText)
         val toast = Toast(requireContext())
@@ -168,11 +176,11 @@ class PlaylistCreateFragment : Fragment() {
         confirmDialog.show()
     }
 
-    fun close(){
+    open fun close(){
         findNavController().navigateUp()
     }
 
-    fun showEmpty() {
+    open fun showEmpty() {
 
     }
 

@@ -30,20 +30,31 @@ class SearchFragment : Fragment() {
     private var isClickAllowed = true
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
-    private val tracksAdapter = SearchTracksAdapter { track ->
-        if (clickDebounce()) {
-            val action = SearchFragmentDirections.actionSearchFragmentToAudioPlayerFragment(track)
-            findNavController().navigate(action)
-            viewModel.onClickTrack(track)
+    private val tracksAdapter = SearchTracksAdapter(
+        clickListener = { track ->
+            if (clickDebounce()) {
+                val action = SearchFragmentDirections.actionSearchFragmentToAudioPlayerFragment(track)
+                findNavController().navigate(action)
+                viewModel.onClickTrack(track)
+            }
+        },
+        longClickListener = { _ ->
+            true
         }
-    }
-    private val historyTracksAdapter = SearchTracksAdapter { track ->
-        if (clickDebounce()) {
-            val action = SearchFragmentDirections.actionSearchFragmentToAudioPlayerFragment(track)
-            findNavController().navigate(action)
-            viewModel.onClickTrackHistory(track)
+    )
+
+    private val historyTracksAdapter = SearchTracksAdapter(
+        clickListener = { track ->
+            if (clickDebounce()) {
+                val action = SearchFragmentDirections.actionSearchFragmentToAudioPlayerFragment(track)
+                findNavController().navigate(action)
+                viewModel.onClickTrackHistory(track)
+            }
+        },
+        longClickListener = { _ ->
+            true
         }
-    }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,

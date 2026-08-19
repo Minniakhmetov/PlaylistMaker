@@ -24,12 +24,18 @@ class FavoriteTracksFragment : Fragment() {
     private var _binding: FragmentFavoriteTracksBinding? = null
     private val binding get() = _binding!!
 
-    private val favoriteTracksAdapter = SearchTracksAdapter { track ->
-        if (clickDebounce()) {
-            val action = LibraryFragmentDirections.actionLibraryFragmentToAudioPlayerFragment(track)
-            findNavController().navigate(action)
+    private val favoriteTracksAdapter = SearchTracksAdapter(
+        clickListener = { track ->
+            if (clickDebounce()) {
+                val action = LibraryFragmentDirections.actionLibraryFragmentToAudioPlayerFragment(track)
+                findNavController().navigate(action)
+            }
+        },
+        longClickListener = { _ ->
+            true
         }
-    }
+    )
+
 
     override fun onCreateView(
         inflater: LayoutInflater,

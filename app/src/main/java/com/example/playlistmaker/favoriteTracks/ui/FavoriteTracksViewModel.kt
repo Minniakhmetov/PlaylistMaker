@@ -32,5 +32,4 @@ class FavoriteTracksViewModel(
     private fun renderState(state: FavoriteTracksState) {
         stateLiveData.postValue(state)
     }
-
 }

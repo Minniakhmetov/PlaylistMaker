@@ -7,9 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.playlistmaker.databinding.FragmentSettingBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import kotlin.getValue
 
-class SettingsFragment: Fragment() {
+class SettingsFragment : Fragment() {
     private val viewModel by viewModel<SettingsViewModel>()
     private var _binding: FragmentSettingBinding? = null
     private val binding get() = _binding!!

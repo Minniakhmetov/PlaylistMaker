@@ -18,5 +18,4 @@ class SearchHistoryInteractorImpl(
     override fun clearHistory() {
         repository.clearHistory()
     }
-
 }

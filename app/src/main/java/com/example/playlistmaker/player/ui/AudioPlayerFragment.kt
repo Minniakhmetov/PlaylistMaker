@@ -20,7 +20,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentAudioPlayerBinding
-import com.example.playlistmaker.playlistCreate.domain.models.Playlist
+import com.example.playlistmaker.playlistEdit.domain.models.Playlist
 import com.example.playlistmaker.search.domain.models.Track
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.delay
@@ -32,7 +32,7 @@ import java.util.Locale
 
 class AudioPlayerFragment : Fragment() {
     private var isClickPlaylistAllowed = true
-    private val viewModel:AudioPlayerViewModel  by viewModel{
+    private val viewModel: AudioPlayerViewModel by viewModel {
         parametersOf(
             getString(R.string.message_track_already_added_playlist),
             getString(R.string.message_track_added_playlist)
@@ -49,7 +49,6 @@ class AudioPlayerFragment : Fragment() {
             viewModel.onClickPlaylist(playlist)
         }
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -105,10 +104,10 @@ class AudioPlayerFragment : Fragment() {
             changeTrackIsFavoriteButtonImg(it)
         }
 
-        viewModel.observeShowMessage().observe(viewLifecycleOwner){
+        viewModel.observeShowMessage().observe(viewLifecycleOwner) {
             showToast(it)
         }
-        viewModel.observeShowBottomSheet().observe(viewLifecycleOwner){
+        viewModel.observeShowBottomSheet().observe(viewLifecycleOwner) {
             showBottomSheet(it)
         }
 
@@ -264,7 +263,7 @@ class AudioPlayerFragment : Fragment() {
     }
 
     fun showBottomSheet(isShow: Boolean) {
-        if (isShow){
+        if (isShow) {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             binding.overlay.isVisible = true
         }

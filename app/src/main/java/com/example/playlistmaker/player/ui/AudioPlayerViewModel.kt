@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.favoriteTracks.domain.db.FavoriteTracksInteractor
 import com.example.playlistmaker.main.ui.utils.SingleLiveEvent
-import com.example.playlistmaker.playlistCreate.domain.models.Playlist
+import com.example.playlistmaker.playlistEdit.domain.models.Playlist
 import com.example.playlistmaker.playlists.domain.db.PlaylistsInteractor
 import com.example.playlistmaker.search.domain.models.Track
 import com.google.gson.Gson
@@ -83,14 +83,14 @@ class AudioPlayerViewModel(
         }
     }
 
-    fun onClickPlaylist(playlist: Playlist){
+    fun onClickPlaylist(playlist: Playlist) {
         track?.let {
-            if(playlistContainsTrack(it, playlist)){
+            if (playlistContainsTrack(it, playlist)) {
                 showMessageLiveData.postValue("$messageTrackAlreadyAddedPlaylist ${playlist.name}")
-            }else{
+            } else {
                 viewModelScope.launch {
-                    val result = playlistsInteractor.updatePlaylist(track, playlist)
-                    if (result){
+                    val result = playlistsInteractor.addTrackInPlaylist(track, playlist)
+                    if (result) {
                         renderState(AudioPlayerState.ShowTrack(track))
                         showMessageLiveData.postValue("$messageTrackAddedPlaylist ${playlist.name}")
                     }
@@ -99,14 +99,14 @@ class AudioPlayerViewModel(
         }
     }
 
-    fun onClickCreateNewPlaylist(){
+    fun onClickCreateNewPlaylist() {
         isShowBottomSheet.postValue(false)
     }
 
-    fun playlistContainsTrack(track: Track, playlist: Playlist): Boolean{
-        if (playlist.trackIds == null){
+    fun playlistContainsTrack(track: Track, playlist: Playlist): Boolean {
+        if (playlist.trackIds == null) {
             return false
-        }else{
+        } else {
             val type = object : TypeToken<List<Long>>() {}.type
             val trackIds: List<Long> = gson.fromJson(playlist.trackIds, type)
             return trackIds.contains(track.trackId)
@@ -166,7 +166,8 @@ class AudioPlayerViewModel(
         track?.let {
             viewModelScope.launch {
                 favoriteTracksInteractor.getFavoriteTracksFlow().collect { favoriteTracks ->
-                    trackIsFavoriteLiveData.value = favoriteTracks.any{it.trackId == track.trackId }
+                    trackIsFavoriteLiveData.value =
+                        favoriteTracks.any { it.trackId == track.trackId }
                 }
             }
 
@@ -179,7 +180,7 @@ class AudioPlayerViewModel(
         }
     }
 
-    fun trackAddPlaylistClicked(){
+    fun trackAddPlaylistClicked() {
         viewModelScope.launch {
             playlistsInteractor.getPlaylists().collect { playlists ->
                 playlistsCurrent.value = playlists

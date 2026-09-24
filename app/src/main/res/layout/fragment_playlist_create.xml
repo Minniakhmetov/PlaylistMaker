@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:theme="@style/Theme.PlaylistMaker"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".playlistCreate.ui.PlaylistCreateFragment">
+    tools:context=".playlistEdit.ui.PlaylistCreateFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar_create_playlist"

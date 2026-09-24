@@ -8,11 +8,11 @@ import com.example.playlistmaker.favoriteTracks.data.db.TrackEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface  TrackDao {
+interface TrackDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTrack(track: TrackEntity)
 
-    @Query ("DELETE FROM favorite_tracks WHERE trackId = :trackId" )
+    @Query("DELETE FROM favorite_tracks WHERE trackId = :trackId")
     suspend fun deleteTrack(trackId: Long)
 
     @Query("SELECT * FROM favorite_tracks ORDER BY created DESC")

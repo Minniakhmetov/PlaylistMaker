@@ -41,6 +41,7 @@
     <string name="library_is_empty">Ваша медиатека пуста</string>
     <string name="favorite_tracks">Избранные треки</string>
     <string name="playlists">Плейлисты</string>
+    <string name="playlist">Плейлист</string>
 
     <string name="new_playlist_name">Название*</string>
     <string name="new_playlist_description">Описание</string>
@@ -51,11 +52,15 @@
     <string name="text_all_unsaved_data_will_be_lost">Все несохраненные данные будут потеряны</string>
     <string name="text_cancel">Отмена</string>
     <string name="text_complete">Завершить</string>
+    <string name="text_yes">Да</string>
+    <string name="text_no">Нет</string>
+    <string name="text_do_you_want_to_delete_the_track">Хотите удалить трек?</string>
+    <string name="text_do_you_want_to_delete_the_playlist">Хотите удалить плейлист %1$s?</string>
+    <string name="text_playlist_has_been_created">Плейлист %1$s создан</string>
+    <string name="save">Сохранить</string>
+    <string name="edit">Редактировать</string>
 
-    <string name="text_tracks_null">Нет треков</string>
-    <string name="text_tracks_1">трек</string>
-    <string name="text_tracks_2_4">трека</string>
-    <string name="text_tracks_other">треков</string>
+    <string name="not_tracks_for_shared">В этом плейлисте нет списка треков, которым можно поделиться</string>
 
     <string name="message_track_already_added_playlist">Трек уже добавлен в плейлист</string>
     <string name="message_track_added_playlist">Добавлено в плейлист</string>
@@ -66,4 +71,16 @@
     <string name="tools_track_release_date">1965</string>
     <string name="tools_track_primary_genre_name">Rock</string>
     <string name="tools_track_country">Великобритания</string>
+
+    <string name="text_tracks_null">Нет треков</string>
+    <plurals name="tracks">
+        <item quantity="one">%d трек</item>
+        <item quantity="few">%d трека</item>
+        <item quantity="other">%d треков</item>
+    </plurals>
+    <plurals name="minutes">
+        <item quantity="one">%d минута</item>
+        <item quantity="few">%d минуты</item>
+        <item quantity="other">%d минут</item>
+    </plurals>
 </resources>

@@ -2,7 +2,7 @@ package com.example.playlistmaker.player.ui
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.playlistCreate.domain.models.Playlist
+import com.example.playlistmaker.playlistEdit.domain.models.Playlist
 
 class PlayerPlaylistsAdapter(private val clickListener: PlaylistClickListener) :
     RecyclerView.Adapter<PlayerPlaylistsViewHolder>() {

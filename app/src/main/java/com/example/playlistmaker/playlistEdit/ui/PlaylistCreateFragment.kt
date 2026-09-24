@@ -1,5 +1,6 @@
-package com.example.playlistmaker.playlistCreate.ui
+package com.example.playlistmaker.playlistEdit.ui
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -18,24 +19,22 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistCreateBinding
-import com.example.playlistmaker.playlistCreate.domain.models.Playlist
+import com.example.playlistmaker.playlistEdit.domain.models.Playlist
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.io.File
 
-class PlaylistCreateFragment : Fragment() {
-    private val viewModel: PlaylistCreateViewModel by viewModel()
-    private var _binding: FragmentPlaylistCreateBinding? = null
-    private val binding get() = _binding!!
+open class PlaylistCreateFragment : Fragment() {
+    open val viewModel: PlaylistCreateViewModel by viewModel()
+    open var _binding: FragmentPlaylistCreateBinding? = null
+    open val binding get() = _binding!!
     private var isClickAllowed = true
 
     private var bottomPadding = 0
-    lateinit var confirmDialog: MaterialAlertDialogBuilder
+    open lateinit var confirmDialog: MaterialAlertDialogBuilder
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,7 +48,6 @@ class PlaylistCreateFragment : Fragment() {
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         ViewCompat.setOnApplyWindowInsetsListener(binding.fragmentPlaylistCreate) { view, insets ->
@@ -59,14 +57,14 @@ class PlaylistCreateFragment : Fragment() {
             insets
         }
 
-        viewModel.observeShowMessage().observe(viewLifecycleOwner){
+        viewModel.observeShowMessage().observe(viewLifecycleOwner) {
             showMessage(it)
         }
 
         binding.toolbarCreatePlaylist.setNavigationOnClickListener {
             viewModel.onClickBack()
         }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             viewModel.onClickBack()
         }
 
@@ -74,10 +72,20 @@ class PlaylistCreateFragment : Fragment() {
             if (text != null) {
                 if (text.isEmpty()) {
                     binding.btnCreatePlaylist.isEnabled = false
-                    binding.btnCreatePlaylist.setBackgroundColor(ContextCompat.getColor(requireContext(),R.color.yp_text_gray))
+                    binding.btnCreatePlaylist.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.yp_text_gray
+                        )
+                    )
                 } else {
                     binding.btnCreatePlaylist.isEnabled = true
-                    binding.btnCreatePlaylist.setBackgroundColor(ContextCompat.getColor(requireContext(),R.color.yp_blue))
+                    binding.btnCreatePlaylist.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.yp_blue
+                        )
+                    )
                 }
                 viewModel.updateName(text.toString())
             }
@@ -89,7 +97,7 @@ class PlaylistCreateFragment : Fragment() {
 
         binding.btnCreatePlaylist.setOnClickListener {
             if (clickDebounce()) {
-                viewModel.createPlaylist()
+                viewModel.savePlaylist()
                 findNavController().navigateUp()
             }
         }
@@ -109,13 +117,16 @@ class PlaylistCreateFragment : Fragment() {
         }
 
 
-        confirmDialog = MaterialAlertDialogBuilder(requireContext(), R.style.CustomMaterialAlertDialog)
-            .setTitle(getString(R.string.text_finish_creating_playlist))
-            .setMessage(getString(R.string.text_all_unsaved_data_will_be_lost))
-            .setNeutralButton(getString(R.string.text_cancel)) { _, _ ->
-            }.setPositiveButton(getString(R.string.text_complete)) { _, _ ->
-                close()
-            }
+        confirmDialog =
+            MaterialAlertDialogBuilder(requireContext(), R.style.CustomMaterialAlertDialog)
+                .setTitle(getString(R.string.text_finish_creating_playlist))
+                .setMessage(getString(R.string.text_all_unsaved_data_will_be_lost))
+                .setNeutralButton(getString(R.string.text_cancel)) { _, _ ->
+                }.setPositiveButton(getString(R.string.text_complete)) { _, _ ->
+                    close()
+                }
+
+        viewModel.init()
     }
 
 
@@ -136,31 +147,35 @@ class PlaylistCreateFragment : Fragment() {
         return current
     }
 
-    fun render(state: PlaylistCreateState) {
+    open fun render(state: PlaylistCreateState) {
         when (state) {
-            is PlaylistCreateState.Content -> showContent(state.playlist)
+            is PlaylistCreateState.Loading -> loading()
+            is PlaylistCreateState.Content -> showContent(state.playlist, state.uri)
             PlaylistCreateState.Empty -> showEmpty()
             is PlaylistCreateState.ShowDialog -> showDialog()
             PlaylistCreateState.Close -> close()
         }
     }
-    fun showContent(playlist: Playlist) {
-        val file = File(playlist.pathImageCover)
-        binding.imgCreatePlaylistAddPhoto.background = null
-        Glide.with(binding.root)
-            .load(file)
-            .centerCrop()
-            .into(binding.imgCreatePlaylistAddPhoto)
+
+    open fun loading() {
+        binding.toolbarCreatePlaylist.setTitle(getString(R.string.new_playlist))
+        binding.btnCreatePlaylist.text = getString(R.string.new_playlist_create)
     }
 
-    fun showMessage(message: String) {
+    open fun showContent(playlist: Playlist, uri: Uri?) {
+        binding.imgCreatePlaylistAddPhoto.background = null
+        binding.imgCreatePlaylistAddPhoto.setImageURI(uri)
+        binding.imgCreatePlaylistAddPhoto.scaleType = ImageView.ScaleType.CENTER_CROP
+    }
+
+    open fun showMessage(playlistName: String) {
         val view = LayoutInflater.from(requireContext()).inflate(R.layout.toast_custom, null)
         val textView = view.findViewById<TextView>(R.id.toastText)
         val toast = Toast(requireContext())
         toast.duration = Toast.LENGTH_LONG
-        textView.text = message
+        textView.text = getString(R.string.text_playlist_has_been_created, playlistName)
         toast.view = view
-        toast.setGravity(Gravity.FILL_HORIZONTAL or Gravity.BOTTOM,0,bottomPadding)
+        toast.setGravity(Gravity.FILL_HORIZONTAL or Gravity.BOTTOM, 0, bottomPadding)
         toast.show()
     }
 
@@ -168,11 +183,11 @@ class PlaylistCreateFragment : Fragment() {
         confirmDialog.show()
     }
 
-    fun close(){
+    open fun close() {
         findNavController().navigateUp()
     }
 
-    fun showEmpty() {
+    open fun showEmpty() {
 
     }
 

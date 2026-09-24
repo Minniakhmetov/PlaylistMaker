@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentLibraryBinding
 import com.google.android.material.tabs.TabLayoutMediator
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LibraryFragment : Fragment(), SelectPage {
     private var _binding: FragmentLibraryBinding? = null
@@ -58,7 +57,6 @@ class LibraryFragment : Fragment(), SelectPage {
         _binding = null
         tabMediator.detach()
     }
-
 
     override fun navigateTo(page: Int) {
         binding.viewPagerMedicalLibrary.currentItem = page

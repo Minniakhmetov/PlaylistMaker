@@ -20,10 +20,14 @@ class PlaylistsViewHolder(private val binding: ItemPlaylistBinding) : RecyclerVi
             .into(binding.imgPlaylist)
 
         binding.tvName.text = playlist.name
-        if (playlist.numberTracks == null){
-            binding.tvCount.text = getString(this.itemView.context,R.string.text_tracks_null)
-        }else{
-            binding.tvCount.text = this.itemView.resources.getQuantityString(R.plurals.tracks, playlist.numberTracks, playlist.numberTracks)
+        if (playlist.numberTracks == null) {
+            binding.tvCount.text = getString(this.itemView.context, R.string.text_tracks_null)
+        } else {
+            binding.tvCount.text = this.itemView.resources.getQuantityString(
+                R.plurals.tracks,
+                playlist.numberTracks,
+                playlist.numberTracks
+            )
         }
     }
 

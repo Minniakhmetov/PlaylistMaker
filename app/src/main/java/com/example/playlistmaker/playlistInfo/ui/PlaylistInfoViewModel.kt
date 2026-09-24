@@ -19,7 +19,7 @@ import java.util.Locale
 class PlaylistInfoViewModel(
     private val playlistsInteractor: PlaylistsInteractor,
     private val sharingInteractor: SharingInteractor,
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
     private val resources: Resources
 ) : ViewModel() {
     private val isShowBottomSheetMenu = MutableLiveData(false)
@@ -63,11 +63,11 @@ class PlaylistInfoViewModel(
         }
     }
 
-    fun setTracksDuration(playlist: Playlist){
-        if (playlist.trackIds.isNullOrEmpty()){
+    fun setTracksDuration(playlist: Playlist) {
+        if (playlist.trackIds.isNullOrEmpty()) {
             tracksList.postValue(null)
             playlistDuration.postValue(0)
-        }else{
+        } else {
             viewModelScope.launch {
                 playlistsInteractor.getTracksInPlaylist(playlist.trackIds).collect { tracks ->
                     currentTracks = tracks
@@ -83,56 +83,73 @@ class PlaylistInfoViewModel(
         }
     }
 
-    fun onClickTrack(track: Track){
+    fun onClickTrack(track: Track) {
 
     }
 
-    fun onClickYesDeleteTrack(track: Track){
+    fun onClickYesDeleteTrack(track: Track) {
         viewModelScope.launch {
             playlistsInteractor.deleteTrackInPlaylist(playlistCurrent, track.trackId)
         }
     }
-    fun onClickYesDeletePlaylist(playlist: Playlist){
+
+    fun onClickYesDeletePlaylist(playlist: Playlist) {
 
 
         viewModelScope.launch {
             val result = playlistsInteractor.deletePlaylist(playlist)
-            if (result){
+            if (result) {
                 renderState(PlaylistInfoState.Close)
             }
         }
     }
 
-    fun onClickShare(){
-        if (playlistCurrent.trackIds.isNullOrEmpty()){
+    fun onClickShare() {
+        if (playlistCurrent.trackIds.isNullOrEmpty()) {
             showMessageLiveData.postValue(resources.getString(R.string.not_tracks_for_shared))
-        }else{
-            sharingInteractor.shareApp(resources.getString(R.string.playlist), getMessage(playlistCurrent, currentTracks))
+        } else {
+            sharingInteractor.shareApp(
+                resources.getString(R.string.playlist),
+                getMessage(playlistCurrent, currentTracks)
+            )
         }
         isShowBottomSheetMenu.postValue(false)
     }
 
     fun getMessage(playlist: Playlist, tracks: List<Track>): String {
         var message = "${playlist.name}\n"
-        if (!playlist.description.isNullOrEmpty()){
+        if (!playlist.description.isNullOrEmpty()) {
             message += "${playlist.description}\n"
         }
-        message += playlist.numberTracks?.let { "${resources.getQuantityString(R.plurals.tracks, it, it)}\n" }
+        message += playlist.numberTracks?.let {
+            "${
+                resources.getQuantityString(
+                    R.plurals.tracks,
+                    it,
+                    it
+                )
+            }\n"
+        }
 
         tracks.forEachIndexed { index, track ->
-            message += "${index + 1}. ${track.artistName} - ${track.trackName} (${dateFormatMinSec.format(track.trackTime.toLong())})\n"
+            message += "${index + 1}. ${track.artistName} - ${track.trackName} (${
+                dateFormatMinSec.format(
+                    track.trackTime.toLong()
+                )
+            })\n"
         }
         return message
     }
 
-    fun onClickMore(){
+    fun onClickMore() {
         isShowBottomSheetMenu.postValue(true)
     }
 
-    fun onClickMenuDeletePlaylist(){
+    fun onClickMenuDeletePlaylist() {
         isShowDeletePlaylistDialog.postValue(playlistCurrent)
     }
-    fun onClickMenuEditPlaylist(){
+
+    fun onClickMenuEditPlaylist() {
         openEditPlaylist.postValue(playlistId!!)
     }
 

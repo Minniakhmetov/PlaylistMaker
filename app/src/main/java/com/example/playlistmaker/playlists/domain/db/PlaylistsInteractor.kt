@@ -13,6 +13,8 @@ interface PlaylistsInteractor {
 
     fun getPlaylist(id: Long): Flow<Playlist?>
 
+    fun getUri(pathImageCover: String): Uri
+
     suspend fun saveTrackInPlaylist(track: Track)
     suspend fun deleteTrackInPlaylist(playlist: Playlist, trackId: Long)
     suspend fun deletePlaylist(playlist: Playlist): Boolean

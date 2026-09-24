@@ -26,7 +26,8 @@ class PlaylistsFragment : Fragment() {
     private var isClickAllowed = true
     private val playlistsAdapter = PlaylistsAdapter { playlist ->
         if (clickDebounce()) {
-            val action = LibraryFragmentDirections.actionLibraryFragmentToPlaylistInfoFragment(playlist.id)
+            val action =
+                LibraryFragmentDirections.actionLibraryFragmentToPlaylistInfoFragment(playlist.id)
             findNavController().navigate(action)
         }
     }

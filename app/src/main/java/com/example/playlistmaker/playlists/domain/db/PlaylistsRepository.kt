@@ -13,6 +13,8 @@ interface PlaylistsRepository {
 
     fun getPlaylist(id: Long): Flow<Playlist?>
 
+    fun getUri(pathImageCover: String): Uri
+
     suspend fun deletePlaylist(playlist: Playlist): Boolean
 
     suspend fun saveTrackInPlaylist(track: Track)

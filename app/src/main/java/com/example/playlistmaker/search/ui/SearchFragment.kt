@@ -33,7 +33,8 @@ class SearchFragment : Fragment() {
     private val tracksAdapter = SearchTracksAdapter(
         clickListener = { track ->
             if (clickDebounce()) {
-                val action = SearchFragmentDirections.actionSearchFragmentToAudioPlayerFragment(track)
+                val action =
+                    SearchFragmentDirections.actionSearchFragmentToAudioPlayerFragment(track)
                 findNavController().navigate(action)
                 viewModel.onClickTrack(track)
             }
@@ -46,7 +47,8 @@ class SearchFragment : Fragment() {
     private val historyTracksAdapter = SearchTracksAdapter(
         clickListener = { track ->
             if (clickDebounce()) {
-                val action = SearchFragmentDirections.actionSearchFragmentToAudioPlayerFragment(track)
+                val action =
+                    SearchFragmentDirections.actionSearchFragmentToAudioPlayerFragment(track)
                 findNavController().navigate(action)
                 viewModel.onClickTrackHistory(track)
             }

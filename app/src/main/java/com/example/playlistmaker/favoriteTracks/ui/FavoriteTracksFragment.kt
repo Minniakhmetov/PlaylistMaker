@@ -27,7 +27,8 @@ class FavoriteTracksFragment : Fragment() {
     private val favoriteTracksAdapter = SearchTracksAdapter(
         clickListener = { track ->
             if (clickDebounce()) {
-                val action = LibraryFragmentDirections.actionLibraryFragmentToAudioPlayerFragment(track)
+                val action =
+                    LibraryFragmentDirections.actionLibraryFragmentToAudioPlayerFragment(track)
                 findNavController().navigate(action)
             }
         },

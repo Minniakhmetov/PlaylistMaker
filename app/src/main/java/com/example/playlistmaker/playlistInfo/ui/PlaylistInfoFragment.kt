@@ -29,7 +29,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import kotlin.getValue
 
 class PlaylistInfoFragment : Fragment() {
 
@@ -44,7 +43,10 @@ class PlaylistInfoFragment : Fragment() {
     private val tracksAdapter = SearchTracksAdapter(
         clickListener = { track ->
             if (clickDebounce()) {
-                val action = PlaylistInfoFragmentDirections.actionPlaylistInfoFragmentToAudioPlayerFragment(track)
+                val action =
+                    PlaylistInfoFragmentDirections.actionPlaylistInfoFragmentToAudioPlayerFragment(
+                        track
+                    )
                 findNavController().navigate(action)
                 viewModel.onClickTrack(track)
             }
@@ -56,7 +58,6 @@ class PlaylistInfoFragment : Fragment() {
     )
 
     private var bottomPadding = 0
-
 
 
     override fun onCreateView(
@@ -74,19 +75,19 @@ class PlaylistInfoFragment : Fragment() {
             binding.tvPlaylistDuration.text =
                 requireContext().resources.getQuantityString(R.plurals.minutes, it, it)
         }
-        viewModel.observeTracks().observe(viewLifecycleOwner){
+        viewModel.observeTracks().observe(viewLifecycleOwner) {
             showTracks(it)
         }
-        viewModel.observeShowMessage().observe(viewLifecycleOwner){
+        viewModel.observeShowMessage().observe(viewLifecycleOwner) {
             showToast(it)
         }
-        viewModel.observeShowDeletePlaylistDialog().observe(viewLifecycleOwner){
+        viewModel.observeShowDeletePlaylistDialog().observe(viewLifecycleOwner) {
             showDeletePlaylistDialog(it)
         }
-        viewModel.observeShowBottomSheetMenu().observe(viewLifecycleOwner){
+        viewModel.observeShowBottomSheetMenu().observe(viewLifecycleOwner) {
             showBottomSheet(it)
         }
-        viewModel.observeOpenEditPlaylist().observe(viewLifecycleOwner){
+        viewModel.observeOpenEditPlaylist().observe(viewLifecycleOwner) {
             openEditPlaylist(it)
         }
 
@@ -120,6 +121,7 @@ class PlaylistInfoFragment : Fragment() {
                     BottomSheetBehavior.STATE_HIDDEN -> {
                         binding.overlay.isVisible = false
                     }
+
                     else -> {
                         binding.overlay.isVisible = true
                     }
@@ -194,14 +196,18 @@ class PlaylistInfoFragment : Fragment() {
             .placeholder(R.drawable.ic_track_placeholder_312)
             .into(binding.playlistImg)
         binding.tvPlaylistName.text = playlist.name
-        if (!playlist.description.isNullOrEmpty()){
+        if (!playlist.description.isNullOrEmpty()) {
             binding.tvPlaylistDescription.text = playlist.description
         }
-        if (playlist.numberTracks == null){
+        if (playlist.numberTracks == null) {
             binding.tvTracksNumber.text =
                 ContextCompat.getString(requireContext(), R.string.text_tracks_null)
-        }else{
-            binding.tvTracksNumber.text = requireContext().resources.getQuantityString(R.plurals.tracks, playlist.numberTracks, playlist.numberTracks)
+        } else {
+            binding.tvTracksNumber.text = requireContext().resources.getQuantityString(
+                R.plurals.tracks,
+                playlist.numberTracks,
+                playlist.numberTracks
+            )
         }
         Glide
             .with(binding.root)
@@ -209,21 +215,25 @@ class PlaylistInfoFragment : Fragment() {
             .placeholder(R.drawable.ic_track_placeholder_45)
             .into(binding.imgMenuPlaylist)
         binding.tvMenuPlaylistName.text = playlist.name
-        if (playlist.numberTracks == null){
+        if (playlist.numberTracks == null) {
             binding.tvMenuPlaylistCount.text =
                 ContextCompat.getString(requireContext(), R.string.text_tracks_null)
-        }else{
-            binding.tvMenuPlaylistCount.text = requireContext().resources.getQuantityString(R.plurals.tracks, playlist.numberTracks, playlist.numberTracks)
+        } else {
+            binding.tvMenuPlaylistCount.text = requireContext().resources.getQuantityString(
+                R.plurals.tracks,
+                playlist.numberTracks,
+                playlist.numberTracks
+            )
         }
     }
 
-    fun showTracks(tracks: List<Track>?){
-        if (tracks == null){
+    fun showTracks(tracks: List<Track>?) {
+        if (tracks == null) {
             binding.tvTracksEmpty.isVisible = true
             tracksAdapter.tracks.clear()
             tracksAdapter.notifyDataSetChanged()
 
-        }else{
+        } else {
             binding.tvTracksEmpty.isVisible = false
             tracksAdapter.tracks.clear()
             tracksAdapter.tracks.addAll(tracks)
@@ -234,40 +244,43 @@ class PlaylistInfoFragment : Fragment() {
 
     fun showDeleteTrackDialog(track: Track) {
         MaterialAlertDialogBuilder(requireContext(), R.style.CustomMaterialAlertDialog)
-            .setMessage("Хотите удалить трек?")
-            .setNegativeButton("Нет"){ _, _ ->
+            .setMessage(getString(R.string.text_do_you_want_to_delete_the_track))
+            .setNegativeButton(getString(R.string.text_no)) { _, _ ->
 
             }
-            .setPositiveButton("Да") { _, _ ->
+            .setPositiveButton(getString(R.string.text_yes)) { _, _ ->
                 viewModel.onClickYesDeleteTrack(track)
             }
             .show()
     }
+
     fun showDeletePlaylistDialog(playlist: Playlist) {
         MaterialAlertDialogBuilder(requireContext(), R.style.CustomMaterialAlertDialog)
-            .setMessage("Хотите удалить плейлист ${playlist.name}?")
-            .setNegativeButton("Нет"){ _, _ ->
+            .setMessage(getString(R.string.text_do_you_want_to_delete_the_playlist, playlist.name))
+            .setNegativeButton(getString(R.string.text_no)) { _, _ ->
 
             }
-            .setPositiveButton("Да") { _, _ ->
+            .setPositiveButton(getString(R.string.text_yes)) { _, _ ->
                 viewModel.onClickYesDeletePlaylist(playlist)
-//                findNavController().navigateUp()
             }
             .show()
     }
 
     fun showBottomSheet(isShow: Boolean) {
-        if (isShow){
+        if (isShow) {
             bottomSheetBehaviorMenu.state = BottomSheetBehavior.STATE_COLLAPSED
             binding.overlay.isVisible = true
-        }else{
+        } else {
             bottomSheetBehaviorMenu.state = BottomSheetBehavior.STATE_HIDDEN
             binding.overlay.isVisible = false
         }
     }
 
-    fun openEditPlaylist(playlistId: Long){
-        val action = PlaylistInfoFragmentDirections.actionPlaylistInfoFragmentToPlaylistEditFragment(playlistId)
+    fun openEditPlaylist(playlistId: Long) {
+        val action =
+            PlaylistInfoFragmentDirections.actionPlaylistInfoFragmentToPlaylistEditFragment(
+                playlistId
+            )
         findNavController().navigate(action)
     }
 
@@ -282,7 +295,7 @@ class PlaylistInfoFragment : Fragment() {
         toast.show()
     }
 
-    fun close(){
+    fun close() {
         findNavController().navigateUp()
     }
 }

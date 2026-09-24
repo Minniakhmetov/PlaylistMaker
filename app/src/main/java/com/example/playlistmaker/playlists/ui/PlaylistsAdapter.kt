@@ -4,7 +4,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.playlistEdit.domain.models.Playlist
 
-class PlaylistsAdapter (private val clickListener: PlaylistClickListener) :
+class PlaylistsAdapter(private val clickListener: PlaylistClickListener) :
     RecyclerView.Adapter<PlaylistsViewHolder>() {
     var playlists = mutableListOf<Playlist>()
     override fun onCreateViewHolder(

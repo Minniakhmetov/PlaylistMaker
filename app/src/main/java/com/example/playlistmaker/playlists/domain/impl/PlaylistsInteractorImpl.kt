@@ -29,6 +29,10 @@ class PlaylistsInteractorImpl(
         return playlistsRepository.getPlaylist(id)
     }
 
+    override fun getUri(pathImageCover: String): Uri {
+        return playlistsRepository.getUri(pathImageCover)
+    }
+
     override suspend fun saveTrackInPlaylist(track: Track) {
         playlistsRepository.saveTrackInPlaylist(track)
     }

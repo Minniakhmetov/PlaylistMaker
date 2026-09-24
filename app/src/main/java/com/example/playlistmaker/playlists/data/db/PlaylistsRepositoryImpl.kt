@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
+import androidx.core.net.toUri
 import com.example.playlistmaker.main.data.db.AppDatabase
 import com.example.playlistmaker.player.data.TrackInPlaylistDbConvertor
 import com.example.playlistmaker.playlistEdit.data.PlaylistDbConvertor
@@ -37,10 +38,10 @@ class PlaylistsRepositoryImpl(
     }
 
     override suspend fun updatePlaylist(playlist: Playlist, uri: Uri?) {
-        if (uri == null){
+        if (uri == null) {
             val playlistEntity = playlistDbConvertor.map(playlist)
             appDatabase.playlistDao().updatePlaylist(playlistEntity)
-        }else{
+        } else {
             val playlist = playlist.copy(
                 created = System.currentTimeMillis(),
                 pathImageCover = saveImageToPrivateStorage(playlist, uri)
@@ -62,14 +63,19 @@ class PlaylistsRepositoryImpl(
         return appDatabase.playlistDao().getPlaylist(id)
     }
 
+    override fun getUri(pathImageCover: String): Uri {
+        val file = File(pathImageCover)
+        return file.toUri()
+    }
+
     override suspend fun deletePlaylist(playlist: Playlist): Boolean {
         appDatabase.playlistDao().deletePlaylist(playlist.id)
-        if (playlist.trackIds != null){
+        if (playlist.trackIds != null) {
             val type = object : TypeToken<List<Long>>() {}.type
             val trackIds = gson.fromJson<List<Long>>(playlist.trackIds, type)
             val result = deleteTracksNotInPlaylists(trackIds)
             return result
-        }else{
+        } else {
             return true
         }
     }
@@ -84,16 +90,23 @@ class PlaylistsRepositoryImpl(
         val trackIdsList: MutableList<Long> = gson.fromJson(playlist.trackIds, type)
         trackIdsList.remove(trackId)
         var newTrackIdsList: String? = null
-        if (trackIdsList.isNotEmpty()){
+        if (trackIdsList.isNotEmpty()) {
             newTrackIdsList = gson.toJson(trackIdsList)
         }
-        appDatabase.playlistDao().updatePlaylist(playlistDbConvertor.map(playlist.copy(trackIds = newTrackIdsList, numberTracks = trackIdsList.size)))
+        appDatabase.playlistDao().updatePlaylist(
+            playlistDbConvertor.map(
+                playlist.copy(
+                    trackIds = newTrackIdsList,
+                    numberTracks = trackIdsList.size
+                )
+            )
+        )
 
         val trackIds: List<Long> = listOf(trackId)
         deleteTracksNotInPlaylists(trackIds)
     }
 
-    private suspend fun deleteTracksNotInPlaylists(trackIds: List<Long>): Boolean{
+    private suspend fun deleteTracksNotInPlaylists(trackIds: List<Long>): Boolean {
 
         var result = false
 
@@ -105,7 +118,7 @@ class PlaylistsRepositoryImpl(
         val trackIdsInPlaylists: MutableList<Long> = mutableListOf()
         allPlaylists.forEach { playlist ->
             val type = object : TypeToken<List<Long>>() {}.type
-            if (playlist.trackIds != null){
+            if (playlist.trackIds != null) {
                 val trackIdsList: List<Long> = gson.fromJson(playlist.trackIds, type)
                 trackIdsInPlaylists.addAll(trackIdsList)
             }
@@ -115,8 +128,8 @@ class PlaylistsRepositoryImpl(
             !trackIdsInPlaylists.contains(id)
         }
         if (trackIdsToDelete.isNotEmpty()) {
-            trackIdsToDelete.forEach { trackId->
-               result = appDatabase.trackInPlaylistDao().deleteTrack(trackId) > 0
+            trackIdsToDelete.forEach { trackId ->
+                result = appDatabase.trackInPlaylistDao().deleteTrack(trackId) > 0
             }
         }
         return result
@@ -131,9 +144,10 @@ class PlaylistsRepositoryImpl(
 
         val tracksInPlaylist = allTracks.map { tracks ->
 
-            val filterTracks = tracks.filter { it.trackId in idTracksGson }.map { trackInPlaylistEntity ->
-                trackInPlaylistDbConvertor.map(trackInPlaylistEntity)
-            }
+            val filterTracks =
+                tracks.filter { it.trackId in idTracksGson }.map { trackInPlaylistEntity ->
+                    trackInPlaylistDbConvertor.map(trackInPlaylistEntity)
+                }
             filterTracks.sortedBy { track ->
                 idTracksGson.indexOf(track.trackId)
             }.reversed()
@@ -161,9 +175,8 @@ class PlaylistsRepositoryImpl(
         val newPlaylist = playlist.copy(trackIds = trackIdsString, numberTracks = trackIds.size)
 
         val updated = appDatabase.playlistDao().updatePlaylist(playlistDbConvertor.map(newPlaylist))
-        return updated>0
+        return updated > 0
     }
-
 
     private fun saveImageToPrivateStorage(playlist: Playlist, uri: Uri?): String? {
         if (uri == null) {

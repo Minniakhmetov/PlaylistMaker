@@ -6,7 +6,6 @@ import com.example.playlistmaker.favoriteTracks.di.favoriteTracksViewModelModule
 import com.example.playlistmaker.history.di.historyDataModule
 import com.example.playlistmaker.history.di.historyInteractorModule
 import com.example.playlistmaker.history.di.historyRepositoryModule
-import com.example.playlistmaker.library.di.medicalLibraryViewModelModule
 import com.example.playlistmaker.main.di.resourcesModule
 import com.example.playlistmaker.main.di.rootActivityViewModelModule
 import com.example.playlistmaker.player.di.playerViewModelModule
@@ -57,8 +56,6 @@ class App : Application() {
                 sharingInteractorModule,
 
                 playerViewModelModule,
-
-                medicalLibraryViewModelModule,
 
                 favoriteTracksViewModelModule,
                 favoriteTracksRepositoryModule,

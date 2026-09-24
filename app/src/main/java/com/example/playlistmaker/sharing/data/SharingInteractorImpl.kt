@@ -13,6 +13,7 @@ class SharingInteractorImpl(
     override fun shareApp() {
         externalNavigator.shareLink(getShareAppLink(), getShareAppTitle())
     }
+
     override fun shareApp(title: String, message: String) {
         externalNavigator.shareLink(message, title)
     }

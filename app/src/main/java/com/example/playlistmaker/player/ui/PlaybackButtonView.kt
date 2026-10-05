@@ -1,15 +1,13 @@
 package com.example.playlistmaker.player.ui
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.RectF
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
-import androidx.core.graphics.drawable.toBitmap
 import com.example.playlistmaker.R
 
 class PlaybackButtonView @JvmOverloads constructor(
@@ -21,10 +19,8 @@ class PlaybackButtonView @JvmOverloads constructor(
 
 
     private var trackIsPlaying = false
-    private val imageBitmapPause: Bitmap?
-    private val imageBitmapStart: Bitmap?
-    private var imageRect = RectF(0f, 0f, 0f, 0f)
-
+    private val imagePause: Drawable?
+    private val imageStart: Drawable?
 
     init {
         context.theme.obtainStyledAttributes(
@@ -34,10 +30,8 @@ class PlaybackButtonView @JvmOverloads constructor(
             defStyleRes
         ).apply {
             try {
-                imageBitmapPause =
-                    getDrawable(R.styleable.ButtonStartStop_imageResIdPause)?.toBitmap()
-                imageBitmapStart =
-                    getDrawable(R.styleable.ButtonStartStop_imageResIdPlay)?.toBitmap()
+                imagePause = getDrawable(R.styleable.ButtonStartStop_imageResIdPause)
+                imageStart = getDrawable(R.styleable.ButtonStartStop_imageResIdPlay)
             } finally {
                 recycle()
             }
@@ -46,18 +40,15 @@ class PlaybackButtonView @JvmOverloads constructor(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        imageRect = RectF(0f, 0f, measuredWidth.toFloat(), measuredHeight.toFloat())
+        imagePause?.setBounds(0, 0, measuredWidth, measuredHeight)
+        imageStart?.setBounds(0, 0, measuredWidth, measuredHeight)
     }
 
     override fun onDraw(canvas: Canvas) {
         if (trackIsPlaying) {
-            imageBitmapPause?.let {
-                canvas.drawBitmap(imageBitmapPause, null, imageRect, null)
-            }
+            imagePause?.draw(canvas)
         } else {
-            imageBitmapStart?.let {
-                canvas.drawBitmap(imageBitmapStart, null, imageRect, null)
-            }
+            imageStart?.draw(canvas)
         }
     }
 
@@ -86,5 +77,4 @@ class PlaybackButtonView @JvmOverloads constructor(
             invalidate()
         }
     }
-
 }

@@ -113,7 +113,7 @@ class AudioPlayerFragment : Fragment() {
 
         binding.tvAudioPlayerTrackTime.text = getString(R.string.track_start_time)
 
-        binding.imgAudioPlayerTrackPlay.setOnClickListener {
+        binding.btnCustomPlayerTrackPlay.setOnClickListener {
             viewModel.onPlayButtonClicked()
         }
 
@@ -184,11 +184,7 @@ class AudioPlayerFragment : Fragment() {
     }
 
     private fun changeButtonImg(isPlaying: Boolean) {
-        if (isPlaying) {
-            binding.imgAudioPlayerTrackPlay.setImageResource(R.drawable.ic_track_pause_100)
-        } else {
-            binding.imgAudioPlayerTrackPlay.setImageResource(R.drawable.ic_track_play_100)
-        }
+        binding.btnCustomPlayerTrackPlay.updateButtonState(isPlaying)
     }
 
     private fun changeTrackIsFavoriteButtonImg(trackIsFavorite: Boolean) {

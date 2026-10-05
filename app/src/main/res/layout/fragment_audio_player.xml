@@ -83,12 +83,13 @@
                     app:layout_constraintTop_toBottomOf="@id/tv_audio_player_track_name"
                     tools:text="@string/tools_search_track_artist" />
 
-                <ImageView
-                    android:id="@+id/img_audio_player_track_play"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <com.example.playlistmaker.player.ui.PlaybackButtonView
+                    android:id="@+id/btn_custom_player_track_play"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
                     android:layout_marginTop="30dp"
-                    android:src="@drawable/ic_track_play_100"
+                    app:imageResIdPause="@drawable/ic_track_pause_100"
+                    app:imageResIdPlay="@drawable/ic_track_play_100"
                     app:layout_constraintEnd_toEndOf="@id/rightBorder"
                     app:layout_constraintStart_toStartOf="@id/leftBorder"
                     app:layout_constraintTop_toBottomOf="@id/tv_audio_player_track_artist" />
@@ -98,18 +99,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_add_playlist_51"
-                    app:layout_constraintBottom_toBottomOf="@id/img_audio_player_track_play"
+                    app:layout_constraintBottom_toBottomOf="@id/btn_custom_player_track_play"
                     app:layout_constraintStart_toStartOf="@id/leftBorder"
-                    app:layout_constraintTop_toTopOf="@id/img_audio_player_track_play" />
+                    app:layout_constraintTop_toTopOf="@id/btn_custom_player_track_play" />
 
                 <ImageView
                     android:id="@+id/img_audio_player_track_like"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_track_like_51"
-                    app:layout_constraintBottom_toBottomOf="@id/img_audio_player_track_play"
+                    app:layout_constraintBottom_toBottomOf="@id/btn_custom_player_track_play"
                     app:layout_constraintEnd_toStartOf="@id/rightBorder"
-                    app:layout_constraintTop_toTopOf="@id/img_audio_player_track_play" />
+                    app:layout_constraintTop_toTopOf="@id/btn_custom_player_track_play" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tv_audio_player_track_time"
@@ -120,9 +121,9 @@
                     android:gravity="center"
                     android:textFontWeight="500"
                     android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="@+id/img_audio_player_track_play"
-                    app:layout_constraintStart_toStartOf="@+id/img_audio_player_track_play"
-                    app:layout_constraintTop_toBottomOf="@id/img_audio_player_track_play"
+                    app:layout_constraintEnd_toEndOf="@+id/btn_custom_player_track_play"
+                    app:layout_constraintStart_toStartOf="@+id/btn_custom_player_track_play"
+                    app:layout_constraintTop_toBottomOf="@id/btn_custom_player_track_play"
                     tools:text="@string/tools_search_track_time" />
 
                 <androidx.constraintlayout.widget.Guideline

@@ -89,7 +89,6 @@ class MusicService : Service(), AudioPlayerControl {
     private fun preparePlayer() {
         if (trackUrl.isEmpty()) return
         mediaPlayer?.setDataSource(trackUrl)
-        mediaPlayer?.prepareAsync()
         mediaPlayer?.setOnPreparedListener {
             _playerState.value = PlayerState.Prepared()
         }
@@ -98,6 +97,7 @@ class MusicService : Service(), AudioPlayerControl {
             resetTimer()
             hideNotification()
         }
+        mediaPlayer?.prepareAsync()
     }
 
     private fun resetTimer() {
@@ -158,7 +158,7 @@ class MusicService : Service(), AudioPlayerControl {
             NOTIFICATION_CHANNEL_ID
         )
             .setContentTitle(getString(R.string.app_name))
-            .setContentText("$trackName - $trackArtist")
+            .setContentText("$trackArtist - $trackName")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)

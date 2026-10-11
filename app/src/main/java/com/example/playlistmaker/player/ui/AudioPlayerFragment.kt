@@ -1,6 +1,13 @@
 package com.example.playlistmaker.player.ui
 
+import android.Manifest
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -9,6 +16,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -20,6 +28,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentAudioPlayerBinding
+import com.example.playlistmaker.player.service.MusicService
 import com.example.playlistmaker.playlistEdit.domain.models.Playlist
 import com.example.playlistmaker.search.domain.models.Track
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -49,6 +58,9 @@ class AudioPlayerFragment : Fragment() {
             viewModel.onClickPlaylist(playlist)
         }
     }
+    var previewUrl = ""
+    var trackName = ""
+    var artistName = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,7 +68,6 @@ class AudioPlayerFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAudioPlayerBinding.inflate(inflater, container, false)
-
 
         viewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
@@ -67,7 +78,6 @@ class AudioPlayerFragment : Fragment() {
         }
 
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -92,12 +102,8 @@ class AudioPlayerFragment : Fragment() {
             findNavController().navigateUp()
         }
 
-        viewModel.observeProgressTime().observe(viewLifecycleOwner) {
-            binding.tvAudioPlayerTrackTime.text = it
-        }
-
         viewModel.observePlayerState().observe(viewLifecycleOwner) {
-            changeButtonImg(it == PlayerState.PLAYING)
+            updateButtonAndProgress(it)
         }
 
         viewModel.observeTrackIsFavorite().observe(viewLifecycleOwner) {
@@ -138,7 +144,6 @@ class AudioPlayerFragment : Fragment() {
             viewModel.onClickCreateNewPlaylist()
         }
 
-
         bottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -159,6 +164,30 @@ class AudioPlayerFragment : Fragment() {
 
         })
         isClickPlaylistAllowed = true
+
+        val track = viewModel.getCurrentTrack()
+        if (track != null) {
+            previewUrl = track.previewUrl
+            trackName = track.trackName
+            artistName = track.artistName
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerForActivityResult(
+                    ActivityResultContracts.RequestPermission()
+                ) { isGranted: Boolean ->
+                    if (isGranted) {
+                        bindMusicService()
+                    }
+                }.launch(Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                bindMusicService()
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
     }
 
     override fun onPause() {
@@ -169,6 +198,7 @@ class AudioPlayerFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        unbindMusicService()
     }
 
     private fun clickDebounce(): Boolean {
@@ -181,10 +211,6 @@ class AudioPlayerFragment : Fragment() {
             }
         }
         return current
-    }
-
-    private fun changeButtonImg(isPlaying: Boolean) {
-        binding.btnCustomPlayerTrackPlay.updateButtonState(isPlaying)
     }
 
     private fun changeTrackIsFavoriteButtonImg(trackIsFavorite: Boolean) {
@@ -276,7 +302,39 @@ class AudioPlayerFragment : Fragment() {
         toast.show()
     }
 
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as MusicService.MusicServiceBinder
+            viewModel.setAudioPlayerControl(binder.getService())
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            viewModel.removeAudioPlayerControl()
+        }
+    }
+
+    private fun bindMusicService() {
+        val intent = Intent(requireContext(), MusicService::class.java).apply {
+            putExtra(TRACK_URL_KEY, previewUrl)
+            putExtra(TRACK_NAME_KEY, trackName)
+            putExtra(TRACK_ARTIST_KEY, artistName)
+        }
+        requireContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+    }
+
+    private fun unbindMusicService() {
+        requireContext().unbindService(serviceConnection)
+    }
+
+    private fun updateButtonAndProgress(playerState: PlayerState) {
+        binding.btnCustomPlayerTrackPlay.updateButtonState(playerState is PlayerState.Playing)
+        binding.tvAudioPlayerTrackTime.text = playerState.progress
+    }
+
     companion object {
         const val CLICK_PLAYLIST_DEBOUNCE_DELAY = 1000L
+        const val TRACK_URL_KEY = "track_url"
+        const val TRACK_NAME_KEY = "track_name"
+        const val TRACK_ARTIST_KEY = "track_artist"
     }
 }

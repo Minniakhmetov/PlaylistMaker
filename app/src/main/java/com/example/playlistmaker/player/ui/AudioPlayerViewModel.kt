@@ -1,6 +1,5 @@
 package com.example.playlistmaker.player.ui
 
-import android.media.MediaPlayer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -8,37 +7,31 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.favoriteTracks.domain.db.FavoriteTracksInteractor
 import com.example.playlistmaker.main.ui.utils.SingleLiveEvent
+import com.example.playlistmaker.player.service.AudioPlayerControl
+import com.example.playlistmaker.player.ui.PlayerState.Default
+import com.example.playlistmaker.player.ui.PlayerState.Paused
+import com.example.playlistmaker.player.ui.PlayerState.Playing
+import com.example.playlistmaker.player.ui.PlayerState.Prepared
 import com.example.playlistmaker.playlistEdit.domain.models.Playlist
 import com.example.playlistmaker.playlists.domain.db.PlaylistsInteractor
 import com.example.playlistmaker.search.domain.models.Track
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class AudioPlayerViewModel(
     private val favoriteTracksInteractor: FavoriteTracksInteractor,
     private val playlistsInteractor: PlaylistsInteractor,
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
     private val gson: Gson,
     private val messageTrackAlreadyAddedPlaylist: String,
     private val messageTrackAddedPlaylist: String,
 ) : ViewModel() {
-    private val playerStateLiveData = MutableLiveData(PlayerState.DEFAULT)
-    fun observePlayerState(): LiveData<PlayerState> = playerStateLiveData
-
-    private val progressTimeLiveData = MutableLiveData(TRACK_TIME_START_VALUE)
-    fun observeProgressTime(): LiveData<String> = progressTimeLiveData
-
+    private val playerState = MutableLiveData<PlayerState>(Default())
+    fun observePlayerState(): LiveData<PlayerState> = playerState
+    private var audioPlayerControl: AudioPlayerControl? = null
     private val isShowBottomSheet = MutableLiveData(false)
     fun observeShowBottomSheet(): LiveData<Boolean> = isShowBottomSheet
-
-    private val mediaPlayer = MediaPlayer()
-
-    private var timerJob: Job? = null
     private val stateLiveData = MutableLiveData<AudioPlayerState>()
     fun observeState(): LiveData<AudioPlayerState> = stateLiveData
     private val trackIsFavoriteLiveData = MutableLiveData(false)
@@ -50,21 +43,35 @@ class AudioPlayerViewModel(
 
     private val track: Track? = savedStateHandle[SAVED_STATE_HANDLE_TRACK]
 
-    private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
+    fun getCurrentTrack(): Track? {
+        return track
+    }
 
-    override fun onCleared() {
-        super.onCleared()
-        mediaPlayer.release()
-        resetTimer()
+    fun setAudioPlayerControl(audioPlayerControl: AudioPlayerControl) {
+        this.audioPlayerControl = audioPlayerControl
+
+        viewModelScope.launch {
+            audioPlayerControl.getCurrentPlayerState().collect {
+                playerState.postValue(it)
+            }
+        }
     }
 
     fun onPlayButtonClicked() {
-        when (playerStateLiveData.value) {
-            PlayerState.DEFAULT -> {}
-            PlayerState.PREPARED, PlayerState.PAUSED -> startPlayer()
-            PlayerState.PLAYING -> pausePlayer()
-            else -> {}
+        when (playerState.value) {
+            is Default, null -> {}
+            is Prepared, is Paused -> audioPlayerControl?.startPlayer()
+            is Playing -> audioPlayerControl?.pausePlayer()
         }
+    }
+
+    fun removeAudioPlayerControl() {
+        audioPlayerControl = null
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        audioPlayerControl = null
     }
 
     fun onFavoriteClicked() {
@@ -73,8 +80,6 @@ class AudioPlayerViewModel(
                 track?.let { favoriteTracksInteractor.deleteFavoriteTrack(it) }
                 trackIsFavoriteLiveData.value = false
             }
-
-
         } else {
             viewModelScope.launch {
                 track?.let { favoriteTracksInteractor.saveFavoriteTrack(it) }
@@ -113,53 +118,16 @@ class AudioPlayerViewModel(
         }
     }
 
-    private fun preparePlayer(track: Track) {
-        mediaPlayer.setDataSource(track.previewUrl)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            playerStateLiveData.postValue(PlayerState.PREPARED)
+    fun onResume() {
+        if (playerState.value is Playing) {
+            audioPlayerControl?.hideNotification()
         }
-        mediaPlayer.setOnCompletionListener {
-            playerStateLiveData.postValue(PlayerState.PREPARED)
-            resetTimer()
-        }
-    }
-
-    private fun startPlayer() {
-        mediaPlayer.start()
-        playerStateLiveData.postValue(PlayerState.PLAYING)
-        startTimerUpdate()
-    }
-
-    private fun pausePlayer() {
-        pauseTimer()
-        mediaPlayer.pause()
-        playerStateLiveData.postValue(PlayerState.PAUSED)
-    }
-
-    private fun startTimerUpdate() {
-        timerJob?.cancel()
-        timerJob = viewModelScope.launch {
-            while (mediaPlayer.isPlaying) {
-                delay(TRACK_TIME_DELAY)
-                progressTimeLiveData.postValue(
-                    dateFormat.format(mediaPlayer.currentPosition)
-                )
-            }
-        }
-    }
-
-    private fun pauseTimer() {
-        timerJob?.cancel()
-    }
-
-    private fun resetTimer() {
-        timerJob?.cancel()
-        progressTimeLiveData.postValue(TRACK_TIME_START_VALUE)
     }
 
     fun onPause() {
-        pausePlayer()
+        if (playerState.value is Playing) {
+            audioPlayerControl?.showNotification()
+        }
     }
 
     fun initTrack() {
@@ -176,7 +144,6 @@ class AudioPlayerViewModel(
                     track = track
                 )
             )
-            preparePlayer(track)
         }
     }
 
@@ -194,8 +161,6 @@ class AudioPlayerViewModel(
     }
 
     companion object {
-        const val TRACK_TIME_START_VALUE = "00:00"
-        private const val TRACK_TIME_DELAY = 400L
         const val SAVED_STATE_HANDLE_TRACK = "track"
     }
 }

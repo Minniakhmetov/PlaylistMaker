@@ -25,8 +25,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class MusicService : Service(), AudioPlayerControl {
     private var mediaPlayer: MediaPlayer? = null
@@ -35,8 +33,6 @@ class MusicService : Service(), AudioPlayerControl {
     private var trackArtist = ""
     private val _playerState = MutableStateFlow<PlayerState>(PlayerState.Default())
     val playerState = _playerState.asStateFlow()
-
-    private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
 
     override fun onCreate() {
         super.onCreate()
@@ -71,7 +67,7 @@ class MusicService : Service(), AudioPlayerControl {
             while (mediaPlayer?.isPlaying == true) {
                 delay(TRACK_TIME_DELAY)
                 _playerState.value =
-                    PlayerState.Playing(dateFormat.format(mediaPlayer?.currentPosition))
+                    PlayerState.Playing(mediaPlayer?.currentPosition ?: 0)
             }
         }
     }
@@ -110,14 +106,14 @@ class MusicService : Service(), AudioPlayerControl {
 
     override fun startPlayer() {
         mediaPlayer?.start()
-        _playerState.value = PlayerState.Playing(dateFormat.format(mediaPlayer?.currentPosition))
+        _playerState.value = PlayerState.Playing(mediaPlayer?.currentPosition ?: 0)
         startTimer()
     }
 
     override fun pausePlayer() {
         mediaPlayer?.pause()
         timerJob?.cancel()
-        _playerState.value = PlayerState.Paused(dateFormat.format(mediaPlayer?.currentPosition))
+        _playerState.value = PlayerState.Paused(mediaPlayer?.currentPosition ?: 0)
     }
 
     override fun showNotification() {

@@ -61,6 +61,14 @@ class AudioPlayerFragment : Fragment() {
     var previewUrl = ""
     var trackName = ""
     var artistName = ""
+    private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted){
+            bindMusicService()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -165,23 +173,10 @@ class AudioPlayerFragment : Fragment() {
         })
         isClickPlaylistAllowed = true
 
-        val track = viewModel.getCurrentTrack()
-        if (track != null) {
-            previewUrl = track.previewUrl
-            trackName = track.trackName
-            artistName = track.artistName
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                registerForActivityResult(
-                    ActivityResultContracts.RequestPermission()
-                ) { isGranted: Boolean ->
-                    if (isGranted) {
-                        bindMusicService()
-                    }
-                }.launch(Manifest.permission.POST_NOTIFICATIONS)
-            } else {
-                bindMusicService()
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            bindMusicService()
         }
     }
 
@@ -314,12 +309,19 @@ class AudioPlayerFragment : Fragment() {
     }
 
     private fun bindMusicService() {
-        val intent = Intent(requireContext(), MusicService::class.java).apply {
-            putExtra(TRACK_URL_KEY, previewUrl)
-            putExtra(TRACK_NAME_KEY, trackName)
-            putExtra(TRACK_ARTIST_KEY, artistName)
+        val track = viewModel.getCurrentTrack()
+        if (track != null) {
+            previewUrl = track.previewUrl
+            trackName = track.trackName
+            artistName = track.artistName
+
+            val intent = Intent(requireContext(), MusicService::class.java).apply {
+                putExtra(TRACK_URL_KEY, previewUrl)
+                putExtra(TRACK_NAME_KEY, trackName)
+                putExtra(TRACK_ARTIST_KEY, artistName)
+            }
+            requireContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
         }
-        requireContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
     }
 
     private fun unbindMusicService() {
@@ -328,7 +330,7 @@ class AudioPlayerFragment : Fragment() {
 
     private fun updateButtonAndProgress(playerState: PlayerState) {
         binding.btnCustomPlayerTrackPlay.updateButtonState(playerState is PlayerState.Playing)
-        binding.tvAudioPlayerTrackTime.text = playerState.progress
+        binding.tvAudioPlayerTrackTime.text = dateFormat.format(playerState.progress)
     }
 
     companion object {

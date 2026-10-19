@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.main.ui.theme.FirstComposeProjectTheme
 
-class LibraryFragment : Fragment(), SelectPage {
+class LibraryFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -41,6 +41,4 @@ class LibraryFragment : Fragment(), SelectPage {
             }
         }
     }
-
-    override fun navigateTo(page: Int) {}
 }

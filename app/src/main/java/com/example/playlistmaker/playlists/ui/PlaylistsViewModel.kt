@@ -1,17 +1,18 @@
 package com.example.playlistmaker.playlists.ui
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.playlists.domain.db.PlaylistsInteractor
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class PlaylistsViewModel(
     private val playlistsInteractor: PlaylistsInteractor
 ) : ViewModel() {
-    private val stateLiveData = MutableLiveData<PlaylistsState>()
-    fun observeState(): LiveData<PlaylistsState> = stateLiveData
+    private val _uiState = MutableStateFlow<PlaylistsState>(PlaylistsState.Empty)
+    val uiState: StateFlow<PlaylistsState> = _uiState.asStateFlow()
 
     init {
         searchPlaylists()
@@ -30,6 +31,6 @@ class PlaylistsViewModel(
     }
 
     private fun renderState(state: PlaylistsState) {
-        stateLiveData.postValue(state)
+        _uiState.value = state
     }
 }

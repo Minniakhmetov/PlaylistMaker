@@ -19,7 +19,6 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FavoriteTracksFragment : Fragment() {
-    private val viewModel by viewModel<FavoriteTracksViewModel>()
     private var isClickAllowed = true
     private var _binding: FragmentFavoriteTracksBinding? = null
     private val binding get() = _binding!!
@@ -44,10 +43,6 @@ class FavoriteTracksFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFavoriteTracksBinding.inflate(inflater, container, false)
-
-        viewModel.observeState().observe(viewLifecycleOwner) {
-            render(it)
-        }
 
         return binding.root
     }

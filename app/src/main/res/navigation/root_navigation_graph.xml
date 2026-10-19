@@ -31,8 +31,7 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.playlistmaker.settings.ui.SettingsFragment"
-        android:label="fragment_setting"
-        tools:layout="@layout/fragment_setting" />
+        android:label="fragment_setting" />
     <fragment
         android:id="@+id/audioPlayerFragment"
         android:name="com.example.playlistmaker.player.ui.AudioPlayerFragment"

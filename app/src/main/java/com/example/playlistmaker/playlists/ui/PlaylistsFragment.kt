@@ -38,11 +38,6 @@ class PlaylistsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentPlaylistsBinding.inflate(inflater, container, false)
-
-        viewModel.observeState().observe(viewLifecycleOwner) {
-            render(it)
-        }
-
         return binding.root
     }
 

@@ -1,8 +1,6 @@
 package com.example.playlistmaker.search.ui
 
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.history.domain.api.SearchHistoryInteractor
@@ -10,6 +8,9 @@ import com.example.playlistmaker.search.domain.api.TracksInteractor
 import com.example.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
@@ -21,8 +22,8 @@ class SearchViewModel(
     ) : ViewModel() {
     private var latestSearchText: String? = null
     private var searchJob: Job? = null
-    private val stateLiveData = MutableLiveData<SearchState>()
-    fun observeState(): LiveData<SearchState> = stateLiveData
+    private val _uiState = MutableStateFlow<SearchState>(SearchState.Start)
+    val uiState: StateFlow<SearchState> = _uiState.asStateFlow()
 
     fun searchDebounce(changedText: String) {
         searchJob?.cancel()
@@ -114,11 +115,6 @@ class SearchViewModel(
         saveTrack(track)
     }
 
-    fun onClickTrackHistory(track: Track) {
-        saveTrack(track)
-        loadHistory()
-    }
-
     fun removeLatestSearchText() {
         latestSearchText = null
     }
@@ -137,7 +133,13 @@ class SearchViewModel(
     }
 
     private fun renderState(state: SearchState) {
-        stateLiveData.postValue(state)
+        _uiState.value = state
+    }
+
+    fun renderStateStart() {
+        renderState(
+            SearchState.Start
+        )
     }
 
     companion object {

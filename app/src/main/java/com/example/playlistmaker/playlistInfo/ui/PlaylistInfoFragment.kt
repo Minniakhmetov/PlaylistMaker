@@ -23,7 +23,6 @@ import com.example.playlistmaker.databinding.FragmentPlaylistInfoBinding
 import com.example.playlistmaker.playlistEdit.domain.models.Playlist
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.search.ui.SearchFragment.Companion.CLICK_TRACK_DEBOUNCE_DELAY
-import com.example.playlistmaker.search.ui.SearchTracksAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.delay

@@ -1,4 +1,4 @@
-package com.example.playlistmaker.search.ui
+package com.example.playlistmaker.playlistInfo.ui
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -13,7 +13,7 @@ class SearchTracksAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ): SearchTrackViewHolder = SearchTrackViewHolder.Companion.from(parent)
+    ): SearchTrackViewHolder = SearchTrackViewHolder.from(parent)
 
     override fun onBindViewHolder(
         holder: SearchTrackViewHolder,

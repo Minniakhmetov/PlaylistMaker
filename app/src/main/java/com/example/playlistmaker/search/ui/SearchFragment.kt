@@ -1,20 +1,15 @@
 package com.example.playlistmaker.search.ui
 
-import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
-import androidx.core.view.isVisible
-import androidx.core.widget.doOnTextChanged
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.FragmentSearchBinding
-import com.example.playlistmaker.search.domain.models.Track
+import com.example.playlistmaker.main.ui.theme.FirstComposeProjectTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -28,100 +23,32 @@ class SearchFragment : Fragment() {
         )
     }
     private var isClickAllowed = true
-    private var _binding: FragmentSearchBinding? = null
-    private val binding get() = _binding!!
-    private val tracksAdapter = SearchTracksAdapter(
-        clickListener = { track ->
-            if (clickDebounce()) {
-                val action =
-                    SearchFragmentDirections.actionSearchFragmentToAudioPlayerFragment(track)
-                findNavController().navigate(action)
-                viewModel.onClickTrack(track)
-            }
-        },
-        longClickListener = { _ ->
-            true
-        }
-    )
-
-    private val historyTracksAdapter = SearchTracksAdapter(
-        clickListener = { track ->
-            if (clickDebounce()) {
-                val action =
-                    SearchFragmentDirections.actionSearchFragmentToAudioPlayerFragment(track)
-                findNavController().navigate(action)
-                viewModel.onClickTrackHistory(track)
-            }
-        },
-        longClickListener = { _ ->
-            true
-        }
-    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentSearchBinding.inflate(inflater, container, false)
-
-        viewModel.observeState().observe(viewLifecycleOwner) {
-            render(it)
-        }
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        binding.tracksList.layoutManager = LinearLayoutManager(requireContext())
-        binding.tracksList.adapter = tracksAdapter
-        binding.historyTracks.layoutManager = LinearLayoutManager(requireContext())
-        binding.historyTracks.adapter = historyTracksAdapter
-
-        binding.btnClearHistory.setOnClickListener {
-            viewModel.clearHistory()
-        }
-
-        binding.messageButton.setOnClickListener {
-            viewModel.repeatLastSearch()
-        }
-
-        val inputMethodManager =
-            activity?.getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
-        binding.buttonClearSearch.setOnClickListener {
-            viewModel.removeLatestSearchText()
-            binding.inputTextSearch.setText("")
-            inputMethodManager?.hideSoftInputFromWindow(
-                requireActivity().currentFocus?.windowToken,
-                0
-            )
-            tracksAdapter.tracks.clear()
-            tracksAdapter.notifyDataSetChanged()
-            binding.messagePlaceholder.isVisible = false
-        }
-
-        binding.inputTextSearch.doOnTextChanged { text, start, before, count ->
-            binding.buttonClearSearch.isVisible = buttonClearSearchVisibility(text)
-            viewModel.searchDebounce(
-                changedText = text.toString()
-            )
-        }
-
-        binding.inputTextSearch.setOnFocusChangeListener { view, hasFocus ->
-            if (hasFocus && binding.inputTextSearch.text.isEmpty() && !(binding.messagePlaceholder.isVisible)) {
-                viewModel.searchDebounce(
-                    changedText = ""
+    ): View = ComposeView(requireContext()).apply {
+        setContent {
+            FirstComposeProjectTheme {
+                SearchScreen(
+                    viewModel,
+                    onTrackClick = { track ->
+                        if (clickDebounce()) {
+                            val action =
+                                SearchFragmentDirections.actionSearchFragmentToAudioPlayerFragment(
+                                    track
+                                )
+                            findNavController().navigate(action)
+                            viewModel.onClickTrack(track)
+                        }
+                    },
+                    onClickClearHistory = {
+                        viewModel.clearHistory()
+                    },
                 )
             }
         }
-
-        isClickAllowed = true
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun clickDebounce(): Boolean {
@@ -134,80 +61,6 @@ class SearchFragment : Fragment() {
             }
         }
         return current
-    }
-
-    fun render(state: SearchState) {
-        when (state) {
-            is SearchState.Loading -> showLoading()
-            is SearchState.Content -> showContent(state.tracks)
-            is SearchState.ContentHistory -> showContentHistory(state.tracks)
-            is SearchState.Error -> showError(state.errorMessage)
-            is SearchState.Empty -> showEmpty(state.message)
-            SearchState.Start -> showStart()
-        }
-    }
-
-    fun showStart() {
-        tracksAdapter.tracks.clear()
-        tracksAdapter.notifyDataSetChanged()
-        historyTracksAdapter.tracks.clear()
-        historyTracksAdapter.notifyDataSetChanged()
-        binding.llSearchHistory.isVisible = false
-    }
-
-    fun showLoading() {
-        binding.llSearchHistory.isVisible = false
-        binding.messagePlaceholder.isVisible = false
-        binding.messageButton.isVisible = false
-        binding.pbTracksSearch.isVisible = true
-    }
-
-    fun showContent(tracksList: List<Track>) {
-        binding.pbTracksSearch.isVisible = false
-        binding.messagePlaceholder.isVisible = false
-        binding.messageButton.isVisible = false
-        binding.llSearchHistory.isVisible = false
-        tracksAdapter.tracks.clear()
-        tracksAdapter.tracks.addAll(tracksList)
-        tracksAdapter.notifyDataSetChanged()
-    }
-
-    fun showContentHistory(tracksList: List<Track>) {
-        binding.pbTracksSearch.isVisible = false
-        binding.messagePlaceholder.isVisible = false
-        binding.messageButton.isVisible = false
-        binding.llSearchHistory.isVisible = true
-        tracksAdapter.tracks.clear()
-        tracksAdapter.notifyDataSetChanged()
-        historyTracksAdapter.tracks.clear()
-        historyTracksAdapter.tracks.addAll(tracksList)
-        historyTracksAdapter.notifyDataSetChanged()
-    }
-
-    fun showError(errorMessage: String) {
-        binding.pbTracksSearch.isVisible = false
-        binding.messagePlaceholder.isVisible = true
-        binding.messageText.text = errorMessage
-        binding.messageButton.isVisible = true
-        binding.messageImage.setImageResource(R.drawable.ic_communication_problems_120)
-        binding.llSearchHistory.isVisible = false
-        tracksAdapter.tracks.clear()
-        tracksAdapter.notifyDataSetChanged()
-    }
-
-    fun showEmpty(emptyMessage: String) {
-        binding.pbTracksSearch.isVisible = false
-        binding.messagePlaceholder.isVisible = true
-        binding.messageText.text = emptyMessage
-        binding.messageButton.isVisible = false
-        binding.messageImage.setImageResource(R.drawable.ic_nothing_was_found_120)
-        binding.llSearchHistory.isVisible = false
-        tracksAdapter.tracks.clear()
-        tracksAdapter.notifyDataSetChanged()
-    }
-
-    private fun buttonClearSearchVisibility(s: CharSequence?): Boolean {
-        return !s.isNullOrEmpty()
     }
 
     companion object {
